@@ -1,0 +1,25 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Vercel
+.vercel/
+
+# Node (if ever needed)
+node_modules/
+package-lock.json
+
+# Logs
+*.log
