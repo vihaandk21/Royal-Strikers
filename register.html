@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Register for Royal Strikers Throwball, Volleyball, and Badminton tournaments. Sign up and pay securely.">
+    <title>Register — Royal Strikers</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👑</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <!-- ===== NAVIGATION ===== -->
+    <nav>
+        <a href="index.html" class="logo">ROYAL STRIKERS</a>
+
+        <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <ul id="navMenu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#sports">Sports</a></li>
+            <li><a href="index.html#about">About</a></li>
+        </ul>
+    </nav>
+
+    <!-- ===== REGISTER HERO ===== -->
+    <section class="register-hero">
+        <h1>Registration</h1>
+        <p>Fill in your details below and complete payment to secure your spot.</p>
+    </section>
+
+    <!-- ===== REGISTRATION FORM ===== -->
+    <section>
+        <div class="register">
+            <form id="registerForm">
+
+                <!-- Web3Forms configuration -->
+                <!-- API Key: Web3Forms (https://web3forms.com) -->
+                <!-- Submissions are sent to the email linked to this key -->
+                <input type="hidden" name="access_key" value="0990bf5a-95c0-4e8f-b4cb-823602f970af">
+                <input type="hidden" name="subject" value="New Registration — Royal Strikers">
+                <input type="hidden" name="from_name" value="Royal Strikers Website">
+                <!-- Admin contact: +91 82963 98607 -->
+
+                <!-- Full Name -->
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" name="fullName"
+                           placeholder="Enter your full name" required>
+                </div>
+
+                <!-- Phone Number -->
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone"
+                           placeholder="10-digit phone number"
+                           pattern="[0-9]{10}" maxlength="10"
+                           title="Please enter a valid 10-digit Indian phone number" required>
+                </div>
+
+                <!-- Sport Selection -->
+                <div class="form-group">
+                    <label for="sport">Select Sport</label>
+                    <select id="sport" name="sport" required>
+                        <option value="" disabled selected>Choose a sport</option>
+                        <option value="Throwball">Throwball</option>
+                        <option value="Volleyball">Volleyball</option>
+                        <option value="Badminton">Badminton</option>
+                    </select>
+                </div>
+
+                <!-- Age Category -->
+                <div class="form-group">
+                    <label for="ageCategory">Age Category</label>
+                    <select id="ageCategory" name="ageCategory" required>
+                        <option value="" disabled selected>Select age category</option>
+                        <option value="Under 9">Under 9 (U-9)</option>
+                        <option value="Under 12">Under 12 (U-12)</option>
+                        <option value="Under 16">Under 16 (U-16)</option>
+                        <option value="Under 19">Under 19 (U-19)</option>
+                        <option value="Open">Open Category</option>
+                    </select>
+                </div>
+
+                <!-- Aadhaar Upload -->
+                <div class="form-group">
+                    <label for="aadhaar">Upload Aadhaar Proof (Image or PDF)</label>
+                    <input type="file" id="aadhaar" name="aadhaar"
+                           accept="image/*,.pdf" required>
+                    <div class="verification-status" id="verificationStatus"></div>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    Register &amp; Pay
+                </button>
+
+                <!-- UPI fallback for desktop users -->
+                <div class="payment-fallback" id="paymentFallback">
+                    <p>If the payment app didn't open, pay manually using this UPI ID:</p>
+                    <div class="upi-id" id="upiId">8296398607@ptaxis</div>
+                    <button type="button" class="copy-btn" onclick="copyUPI()">Copy UPI ID</button>
+                </div>
+
+            </form>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <h3>ROYAL STRIKERS</h3>
+        <p>Compete • Improve • Conquer</p>
+        <p class="copyright">&copy; 2026 Royal Strikers. All Rights Reserved.</p>
+        <p class="credits">Developed By <span>Shreesha</span> and <span>Vihaan</span></p>
+    </footer>
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
