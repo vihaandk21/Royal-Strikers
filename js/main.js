@@ -68,9 +68,9 @@ function showToast(message, type) {
 // ────────────────────────────────────────────────────────────────
 // 3. AADHAAR OCR — AUTO AGE CATEGORY DETECTION
 //    Only runs on the register page (guards for missing elements).
-//    Lazy-loads Tesseract.js from CDN when user uploads an image.
-//    Searches for DD/MM/YYYY date pattern to calculate age.
-//    Falls back gracefully if OCR fails or file is a PDF.
+//    Lazy-loads Tesseract.js v5 from CDN when user uploads an image.
+//    Searches for multiple DOB patterns on Indian Aadhaar cards.
+//    Falls back gracefully if OCR fails, times out, or file is a PDF.
 // ────────────────────────────────────────────────────────────────
 (function initAadhaarVerification() {
     var aadhaarInput = document.getElementById('aadhaar');
@@ -78,8 +78,6 @@ function showToast(message, type) {
 
     // Only run on register page
     if (!aadhaarInput || !status) return;
-
-    var tesseractLoaded = false;
 
     /**
      * Calculates age in years from a Date of Birth.
@@ -89,8 +87,8 @@ function showToast(message, type) {
     function calculateAge(dob) {
         var today = new Date();
         var age = today.getFullYear() - dob.getFullYear();
-        var monthDiff = today.getMonth() - dob.getMonth();
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+        var m = today.getMonth() - dob.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
             age--;
         }
         return age;
@@ -110,11 +108,68 @@ function showToast(message, type) {
         return 'Open';
     }
 
+    /**
+     * Attempts to extract a Date of Birth from OCR text.
+     * Tries multiple patterns commonly found on Aadhaar cards:
+     *   1. DD/MM/YYYY or DD-MM-YYYY or DD.MM.YYYY (most common)
+     *   2. Year of Birth keyword followed by a 4-digit year
+     * @param {string} text - Raw OCR output
+     * @returns {Date|null}
+     */
+    function extractDOB(text) {
+        // Pattern 1: Full date DD/MM/YYYY or DD-MM-YYYY or DD.MM.YYYY
+        var fullDate = text.match(/(\d{2})[\/\-\.](\d{2})[\/\-\.](\d{4})/);
+        if (fullDate) {
+            var day   = parseInt(fullDate[1], 10);
+            var month = parseInt(fullDate[2], 10) - 1;
+            var year  = parseInt(fullDate[3], 10);
+            if (year > 1920 && year < 2025 && month >= 0 && month <= 11 && day >= 1 && day <= 31) {
+                return new Date(year, month, day);
+            }
+        }
+
+        // Pattern 2: Year of Birth only (some Aadhaar cards show only year)
+        var yobMatch = text.match(/(?:year|yob|birth)[:\s]*(\d{4})/i);
+        if (yobMatch) {
+            var y = parseInt(yobMatch[1], 10);
+            if (y > 1920 && y < 2025) {
+                return new Date(y, 0, 1);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Loads Tesseract.js v5 from CDN and returns a ready worker.
+     * Uses createWorker() for explicit lifecycle control.
+     */
+    async function loadAndRunOCR(imageUrl) {
+        // Load the library script if not already present
+        if (!window.Tesseract) {
+            await new Promise(function (resolve, reject) {
+                var s  = document.createElement('script');
+                s.src  = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+                s.onload  = resolve;
+                s.onerror = function () { reject(new Error('Failed to load Tesseract.js')); };
+                document.head.appendChild(s);
+            });
+        }
+
+        // Create a dedicated worker, run OCR, then terminate
+        var worker = await Tesseract.createWorker('eng', 1, {
+            logger: function () {} // silence internal logs
+        });
+        var result = await worker.recognize(imageUrl);
+        await worker.terminate();
+        return result.data.text;
+    }
+
     aadhaarInput.addEventListener('change', async function (e) {
         var file = e.target.files[0];
         if (!file) { status.innerHTML = ''; return; }
 
-        // PDFs can't be OCR'd in the browser — skip gracefully
+        // PDFs can't be OCR'd client-side — skip gracefully
         if (!file.type.startsWith('image/')) {
             status.innerHTML = '<span class="warning">📄 PDF uploaded — please select age category manually.</span>';
             return;
@@ -122,35 +177,26 @@ function showToast(message, type) {
 
         status.innerHTML = '<span class="scanning"><span class="spinner"></span> Scanning Aadhaar for age verification...</span>';
 
-        try {
-            // Lazy-load Tesseract.js from CDN on first use
-            if (!tesseractLoaded && !window.Tesseract) {
-                await new Promise(function (resolve, reject) {
-                    var script  = document.createElement('script');
-                    script.src  = 'https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js';
-                    script.onload  = function () { tesseractLoaded = true; resolve(); };
-                    script.onerror = reject;
-                    document.head.appendChild(script);
-                });
-            }
+        // 30-second timeout so it doesn't hang forever
+        var timeoutId;
+        var timeoutPromise = new Promise(function (_, reject) {
+            timeoutId = setTimeout(function () {
+                reject(new Error('OCR timed out'));
+            }, 30000);
+        });
 
+        try {
             var imageUrl = URL.createObjectURL(file);
-            var result   = await Tesseract.recognize(imageUrl, 'eng');
+
+            var ocrPromise = loadAndRunOCR(imageUrl);
+            var text = await Promise.race([ocrPromise, timeoutPromise]);
+            clearTimeout(timeoutId);
             URL.revokeObjectURL(imageUrl);
 
-            var text = result.data.text;
+            var dob = extractDOB(text);
 
-            // Search for DOB pattern: DD/MM/YYYY or DD-MM-YYYY
-            var dobMatch = text.match(/(\d{2})[\/\-](\d{2})[\/\-](\d{4})/);
-
-            if (dobMatch) {
-                var day   = parseInt(dobMatch[1], 10);
-                var month = parseInt(dobMatch[2], 10) - 1; // JS months 0-indexed
-                var year  = parseInt(dobMatch[3], 10);
-                var dob   = new Date(year, month, day);
-                var age   = calculateAge(dob);
-
-                // Sanity check: age should be between 1 and 100
+            if (dob) {
+                var age = calculateAge(dob);
                 if (age >= 1 && age <= 100) {
                     var category = getAgeCategory(age);
                     document.getElementById('ageCategory').value = category;
@@ -162,11 +208,13 @@ function showToast(message, type) {
                 status.innerHTML = '<span class="warning">⚠️ Could not read date of birth. Please select age category manually.</span>';
             }
         } catch (err) {
-            console.warn('Aadhaar OCR failed:', err);
+            clearTimeout(timeoutId);
+            console.warn('Aadhaar OCR error:', err);
             status.innerHTML = '<span class="warning">⚠️ Auto-verification unavailable. Please select age category manually.</span>';
         }
     });
 })();
+
 
 // ────────────────────────────────────────────────────────────────
 // 4. FORM SUBMISSION — Web3Forms API + UPI REDIRECT

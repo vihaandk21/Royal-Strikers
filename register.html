@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Register for Royal Strikers Throwball, Volleyball, and Badminton tournaments. Sign up and pay securely.">
+    <meta name="description" content="Register for Royal Strikers Volleyball tournaments. Sign up and pay securely.">
     <title>Register — Royal Strikers</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👑</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -64,14 +64,16 @@
                            title="Please enter a valid 10-digit Indian phone number" required>
                 </div>
 
-                <!-- Sport Selection -->
+                <!-- Sport (fixed to Volleyball) -->
+                <input type="hidden" name="sport" value="Volleyball">
+
+                <!-- Level Selection -->
                 <div class="form-group">
-                    <label for="sport">Select Sport</label>
-                    <select id="sport" name="sport" required>
-                        <option value="" disabled selected>Choose a sport</option>
-                        <option value="Throwball">Throwball</option>
-                        <option value="Volleyball">Volleyball</option>
-                        <option value="Badminton">Badminton</option>
+                    <label for="level">Level</label>
+                    <select id="level" name="level" required>
+                        <option value="" disabled selected>Select your level</option>
+                        <option value="School Level">School Level</option>
+                        <option value="College Level">College Level</option>
                     </select>
                 </div>
 
@@ -94,6 +96,13 @@
                     <input type="file" id="aadhaar" name="aadhaar"
                            accept="image/*,.pdf" required>
                     <div class="verification-status" id="verificationStatus"></div>
+                </div>
+
+                <!-- School ID Upload -->
+                <div class="form-group">
+                    <label for="schoolId">Upload School / College ID (Image or PDF)</label>
+                    <input type="file" id="schoolId" name="schoolId"
+                           accept="image/*,.pdf" required>
                 </div>
 
                 <!-- Submit -->
