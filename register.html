@@ -32,7 +32,54 @@
     <!-- ===== REGISTER HERO ===== -->
     <section class="register-hero">
         <h1>Registration</h1>
-        <p>Fill in your details below and complete payment to secure your spot.</p>
+        <p>Fill in your details, complete payment, and download your receipt.</p>
+    </section>
+
+    <!-- ===== TOURNAMENT INFO ===== -->
+    <section style="padding-top: 40px; padding-bottom: 0;">
+        <div class="tournament-info">
+            <h3>📋 Tournament Details</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-icon">🏐</span>
+                    <div>
+                        <strong>Ball</strong>
+                        <p>Cosco brand volleyball</p>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <span class="info-icon">🍽️</span>
+                    <div>
+                        <strong>Lunch</strong>
+                        <p>Provided for all players</p>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <span class="info-icon">🏆</span>
+                    <div>
+                        <strong>Cash Prize</strong>
+                        <p>College level only</p>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <span class="info-icon">🌧️</span>
+                    <div>
+                        <strong>Rain Policy</strong>
+                        <p>Event may be rescheduled in case of rain</p>
+                    </div>
+                </div>
+            </div>
+            <div class="fee-table">
+                <div class="fee-row">
+                    <span>🏫 School Level</span>
+                    <span><strong>₹600</strong> — Full payment, no cash prize</span>
+                </div>
+                <div class="fee-row">
+                    <span>🎓 College Level</span>
+                    <span><strong>₹1,000</strong> — Full payment, cash prize included</span>
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- ===== REGISTRATION FORM ===== -->
@@ -41,21 +88,21 @@
             <form id="registerForm">
 
                 <!-- Web3Forms configuration -->
-                <!-- API Key: Web3Forms (https://web3forms.com) -->
-                <!-- Submissions are sent to the email linked to this key -->
                 <input type="hidden" name="access_key" value="0990bf5a-95c0-4e8f-b4cb-823602f970af">
                 <input type="hidden" name="subject" value="New Registration — Royal Strikers">
                 <input type="hidden" name="from_name" value="Royal Strikers Website">
+                <input type="hidden" name="sport" value="Volleyball">
                 <!-- Admin contact: +91 82963 98607 -->
 
-                <!-- Full Name -->
+                <!-- ── Section 1: Personal Details ── -->
+                <h3 class="form-section-title">Personal Details</h3>
+
                 <div class="form-group">
                     <label for="fullName">Full Name</label>
                     <input type="text" id="fullName" name="fullName"
                            placeholder="Enter your full name" required>
                 </div>
 
-                <!-- Phone Number -->
                 <div class="form-group">
                     <label for="phone">Phone Number</label>
                     <input type="tel" id="phone" name="phone"
@@ -64,20 +111,15 @@
                            title="Please enter a valid 10-digit Indian phone number" required>
                 </div>
 
-                <!-- Sport (fixed to Volleyball) -->
-                <input type="hidden" name="sport" value="Volleyball">
-
-                <!-- Level Selection -->
                 <div class="form-group">
                     <label for="level">Level</label>
                     <select id="level" name="level" required>
                         <option value="" disabled selected>Select your level</option>
-                        <option value="School Level">School Level</option>
-                        <option value="College Level">College Level</option>
+                        <option value="School Level">🏫 School Level — ₹600</option>
+                        <option value="College Level">🎓 College Level — ₹1,000</option>
                     </select>
                 </div>
 
-                <!-- Age Category -->
                 <div class="form-group">
                     <label for="ageCategory">Age Category</label>
                     <select id="ageCategory" name="ageCategory" required>
@@ -90,7 +132,9 @@
                     </select>
                 </div>
 
-                <!-- Aadhaar Upload -->
+                <!-- ── Section 2: Documents ── -->
+                <h3 class="form-section-title" style="margin-top: 30px;">Documents</h3>
+
                 <div class="form-group">
                     <label for="aadhaar">Upload Aadhaar Proof (Image or PDF)</label>
                     <input type="file" id="aadhaar" name="aadhaar"
@@ -98,28 +142,106 @@
                     <div class="verification-status" id="verificationStatus"></div>
                 </div>
 
-                <!-- School ID Upload -->
                 <div class="form-group">
                     <label for="schoolId">Upload School / College ID (Image or PDF)</label>
                     <input type="file" id="schoolId" name="schoolId"
                            accept="image/*,.pdf" required>
                 </div>
 
-                <!-- Submit -->
-                <button type="submit" class="submit-btn" id="submitBtn">
-                    Register &amp; Pay
+                <!-- ── Section 3: Payment ── -->
+                <h3 class="form-section-title" style="margin-top: 30px;">Payment</h3>
+
+                <!-- Dynamic fee display -->
+                <div class="fee-display" id="feeDisplay">
+                    <p>Select your level above to see the fee.</p>
+                </div>
+
+                <!-- Pay via UPI button (not submit — just opens UPI) -->
+                <button type="button" class="pay-btn" id="payBtn" disabled>
+                    Select level first
                 </button>
 
-                <!-- UPI fallback for desktop users -->
-                <div class="payment-fallback" id="paymentFallback">
-                    <p>If the payment app didn't open, pay manually using this UPI ID:</p>
+                <!-- Manual UPI fallback -->
+                <div class="upi-manual" id="upiManual" style="display: none;">
+                    <p>Or pay manually to this UPI ID:</p>
                     <div class="upi-id" id="upiId">8296398607@ptaxis</div>
                     <button type="button" class="copy-btn" onclick="copyUPI()">Copy UPI ID</button>
                 </div>
 
+                <!-- Transaction ID (entered AFTER payment) -->
+                <div class="form-group" style="margin-top: 20px;">
+                    <label for="transactionId">UPI Transaction ID (enter after payment)</label>
+                    <input type="text" id="transactionId" name="transactionId"
+                           placeholder="e.g. 426131XXXXXX or UTR number" required>
+                    <p style="font-size: 12px; color: #888; margin-top: 5px;">
+                        Find this in your UPI app under transaction history
+                    </p>
+                </div>
+
+                <!-- Hidden field for amount (set by JS) -->
+                <input type="hidden" id="amountField" name="amountPaid" value="">
+
+                <!-- Submit & Generate Receipt -->
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    Submit &amp; Download Receipt
+                </button>
+
             </form>
         </div>
     </section>
+
+    <!-- ===== RECEIPT (hidden — captured by html2canvas) ===== -->
+    <div id="receiptWrapper" style="display: none;">
+        <div id="receipt">
+            <div class="receipt-header">
+                <h2>👑 ROYAL STRIKERS</h2>
+                <p>Volleyball Tournament</p>
+                <h3>REGISTRATION RECEIPT</h3>
+            </div>
+            <div class="receipt-body">
+                <div class="receipt-row">
+                    <span>Name</span>
+                    <span id="r-name">—</span>
+                </div>
+                <div class="receipt-row">
+                    <span>Phone</span>
+                    <span id="r-phone">—</span>
+                </div>
+                <div class="receipt-row">
+                    <span>Level</span>
+                    <span id="r-level">—</span>
+                </div>
+                <div class="receipt-row">
+                    <span>Age Category</span>
+                    <span id="r-age">—</span>
+                </div>
+                <div class="receipt-divider"></div>
+                <div class="receipt-row receipt-amount">
+                    <span>Amount Paid</span>
+                    <span id="r-amount">—</span>
+                </div>
+                <div class="receipt-row">
+                    <span>Transaction ID</span>
+                    <span id="r-txn">—</span>
+                </div>
+                <div class="receipt-row">
+                    <span>Date</span>
+                    <span id="r-date">—</span>
+                </div>
+                <div class="receipt-divider"></div>
+                <div class="receipt-info">
+                    <p>🍽️ Lunch provided for all players</p>
+                    <p>🏐 Ball: Cosco brand</p>
+                    <p id="r-prize"></p>
+                    <p>🌧️ Event may be rescheduled in case of rain</p>
+                </div>
+            </div>
+            <div class="receipt-footer">
+                <p>⚠️ Present this receipt at the venue for entry</p>
+                <p class="receipt-small">Royal Strikers © 2026 — Developed by Shreesha & Vihaan</p>
+            </div>
+        </div>
+    </div>
 
     <!-- ===== FOOTER ===== -->
     <footer>
@@ -132,6 +254,8 @@
     <!-- Toast container -->
     <div class="toast-container" id="toastContainer"></div>
 
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

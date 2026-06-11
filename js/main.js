@@ -217,23 +217,98 @@ function showToast(message, type) {
 
 
 // ────────────────────────────────────────────────────────────────
-// 4. FORM SUBMISSION — Web3Forms API + UPI REDIRECT
-//    Silently sends all registration data (including Aadhaar file)
-//    to the Web3Forms dashboard / email, then launches the UPI
-//    payment intent. Shows a manual UPI fallback for desktop.
+// 4. PAYMENT & RECEIPT LOGIC
+//    Handles level selection to display fee, the Pay via UPI button,
+//    Web3Forms submission, and html2canvas receipt generation.
 // ────────────────────────────────────────────────────────────────
-(function initFormSubmission() {
+(function initPaymentAndSubmission() {
     var form      = document.getElementById('registerForm');
+    var levelSel  = document.getElementById('level');
+    var feeDisp   = document.getElementById('feeDisplay');
+    var amtField  = document.getElementById('amountField');
+    var payBtn    = document.getElementById('payBtn');
+    var upiManual = document.getElementById('upiManual');
     var submitBtn = document.getElementById('submitBtn');
-    var fallback  = document.getElementById('paymentFallback');
 
-    // Only run on register page
-    if (!form || !submitBtn) return;
+    if (!form) return;
 
+    var currentAmount = 0;
+
+    // 1. Level Selection Logic
+    levelSel.addEventListener('change', function () {
+        var level = this.value;
+        if (level === 'School Level') {
+            currentAmount = 600;
+            feeDisp.innerHTML = 'Fee: <strong>₹600</strong>';
+            payBtn.textContent = 'Pay ₹600 via UPI';
+            document.getElementById('r-prize').textContent = '🏆 Prize: None (School Level)';
+        } else if (level === 'College Level') {
+            currentAmount = 1000;
+            feeDisp.innerHTML = 'Fee: <strong>₹1,000</strong>';
+            payBtn.textContent = 'Pay ₹1,000 via UPI';
+            document.getElementById('r-prize').textContent = '🏆 Prize: Cash Prize Included';
+        }
+        amtField.value = currentAmount;
+        payBtn.disabled = false;
+    });
+
+    // 2. Pay via UPI Button
+    payBtn.addEventListener('click', function () {
+        if (currentAmount === 0) return;
+
+        // Launch UPI intent
+        var upiLink = 'upi://pay?pa=8296398607@ptaxis&pn=Royal%20Strikers&cu=INR&am=' + currentAmount;
+        window.location.href = upiLink;
+
+        // Show manual fallback in case intent fails (desktop)
+        setTimeout(function () {
+            upiManual.style.display = 'block';
+        }, 1500);
+    });
+
+    // 3. Receipt Generation helper
+    async function generateReceipt() {
+        var wrapper = document.getElementById('receiptWrapper');
+
+        // Populate data
+        document.getElementById('r-name').textContent = document.getElementById('fullName').value;
+        document.getElementById('r-phone').textContent = document.getElementById('phone').value;
+        document.getElementById('r-level').textContent = document.getElementById('level').value;
+        document.getElementById('r-age').textContent = document.getElementById('ageCategory').value;
+        document.getElementById('r-amount').textContent = '₹' + currentAmount;
+        document.getElementById('r-txn').textContent = document.getElementById('transactionId').value;
+
+        var date = new Date();
+        document.getElementById('r-date').textContent = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+
+        // Ensure visible for html2canvas
+        wrapper.style.display = 'block';
+        wrapper.style.left = '0px';
+        wrapper.style.top = '0px';
+        wrapper.style.zIndex = '-100'; // keep behind
+
+        try {
+            var canvas = await html2canvas(document.getElementById('receipt'), {
+                scale: 2, // High resolution
+                useCORS: true
+            });
+
+            var link = document.createElement('a');
+            link.download = 'Royal-Strikers-Receipt.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        } catch (err) {
+            console.error('Receipt generation failed:', err);
+            showToast('Failed to download receipt.', 'error');
+        } finally {
+            wrapper.style.display = 'none';
+        }
+    }
+
+    // 4. Form Submission
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
 
-        // Extra phone validation (pattern attr may not fire on all browsers)
         var phone = document.getElementById('phone').value;
         if (!/^\d{10}$/.test(phone)) {
             showToast('Please enter a valid 10-digit phone number.', 'error');
@@ -241,13 +316,18 @@ function showToast(message, type) {
             return;
         }
 
-        // Show loading state
+        var txn = document.getElementById('transactionId').value.trim();
+        if (!txn) {
+            showToast('Please enter the UPI Transaction ID.', 'error');
+            document.getElementById('transactionId').focus();
+            return;
+        }
+
         submitBtn.disabled  = true;
         submitBtn.innerHTML = '<span class="btn-spinner"></span> Submitting...';
 
         try {
             var formData = new FormData(form);
-
             var response = await fetch('https://api.web3forms.com/submit', {
                 method: 'POST',
                 body: formData
@@ -256,32 +336,21 @@ function showToast(message, type) {
             var result = await response.json();
 
             if (result.success) {
-                showToast('Registration submitted! Redirecting to payment...', 'success');
+                showToast('Registration successful! Downloading receipt...', 'success');
+                await generateReceipt();
 
-                // Brief delay so the user reads the success toast
-                setTimeout(function () {
-                    window.location.href =
-                        'upi://pay?pa=8296398607@ptaxis&pn=Royal%20Strikers&cu=INR';
-
-                    // If UPI app didn't open (desktop), show manual fallback
-                    if (fallback) {
-                        setTimeout(function () {
-                            fallback.style.display = 'block';
-                            showToast('If payment app didn\'t open, use the UPI ID shown below.', 'info');
-                        }, 2000);
-                    }
-                }, 1500);
-
+                // Keep button disabled to prevent double submission
+                submitBtn.innerHTML = '✅ Registration Complete';
             } else {
-                showToast('Submission failed: ' + (result.message || 'Unknown error. Please try again.'), 'error');
+                showToast('Submission failed: ' + (result.message || 'Unknown error.'), 'error');
                 submitBtn.disabled  = false;
-                submitBtn.innerHTML = 'Register &amp; Pay';
+                submitBtn.innerHTML = 'Submit &amp; Download Receipt';
             }
         } catch (error) {
             console.error('Form submission error:', error);
-            showToast('Network error. Please check your connection and try again.', 'error');
+            showToast('Network error. Please try again.', 'error');
             submitBtn.disabled  = false;
-            submitBtn.innerHTML = 'Register &amp; Pay';
+            submitBtn.innerHTML = 'Submit &amp; Download Receipt';
         }
     });
 })();
