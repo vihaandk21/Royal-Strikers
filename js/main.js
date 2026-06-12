@@ -226,12 +226,10 @@ function showToast(message, type) {
             currentAmount = 600;
             feeDisp.innerHTML = 'Fee: <strong>₹600</strong>';
             payBtn.textContent = 'Pay ₹600 via UPI';
-            if (document.getElementById('r-prize')) document.getElementById('r-prize').textContent = 'None (School Level)';
         } else if (level === 'College Level (Under 18)' || level === 'College Level') {
             currentAmount = 1000;
             feeDisp.innerHTML = 'Fee: <strong>₹1,000</strong>';
             payBtn.textContent = 'Pay ₹1,000 via UPI';
-            if (document.getElementById('r-prize')) document.getElementById('r-prize').textContent = 'Cash Prize Included';
         }
         amtField.value = currentAmount;
         payBtn.disabled = false;
