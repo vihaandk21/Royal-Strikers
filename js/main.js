@@ -123,7 +123,7 @@ function showToast(message, type) {
             var day   = parseInt(fullDate[1], 10);
             var month = parseInt(fullDate[2], 10) - 1;
             var year  = parseInt(fullDate[3], 10);
-            if (year > 1920 && year < 2025 && month >= 0 && month <= 11 && day >= 1 && day <= 31) {
+            if (year > 1920 && year < 2027 && month >= 0 && month <= 11 && day >= 1 && day <= 31) {
                 return new Date(year, month, day);
             }
         }
@@ -132,7 +132,7 @@ function showToast(message, type) {
         var yobMatch = text.match(/(?:year|yob|birth)[:\s]*(\d{4})/i);
         if (yobMatch) {
             var y = parseInt(yobMatch[1], 10);
-            if (y > 1920 && y < 2025) {
+            if (y > 1920 && y < 2027) {
                 return new Date(y, 0, 1);
             }
         }
@@ -193,6 +193,8 @@ function showToast(message, type) {
             clearTimeout(timeoutId);
             URL.revokeObjectURL(imageUrl);
 
+            console.log("OCR Raw Output:\n", text); // Helpful for debugging
+
             var dob = extractDOB(text);
 
             if (dob) {
@@ -205,7 +207,7 @@ function showToast(message, type) {
                     status.innerHTML = '<span class="warning">⚠️ Could not determine valid age. Please select category manually.</span>';
                 }
             } else {
-                status.innerHTML = '<span class="warning">⚠️ Could not read date of birth. Please select age category manually.</span>';
+                status.innerHTML = '<span class="warning">⚠️ Could not read date of birth. Please select age category manually. (Check console for raw output)</span>';
             }
         } catch (err) {
             clearTimeout(timeoutId);
