@@ -266,6 +266,29 @@ function showToast(message, type) {
         }, 1500);
     });
 
+    // 2.5 QR Code Modal Logic
+    var qrScannerImg = document.getElementById('qrScannerImg');
+    var qrModal = document.getElementById('qrModal');
+    var qrModalImg = document.getElementById('qrModalImg');
+    var qrClose = document.getElementById('qrClose');
+
+    if (qrScannerImg && qrModal && qrModalImg && qrClose) {
+        qrScannerImg.onclick = function(){
+            qrModal.style.display = "block";
+            qrModalImg.src = this.src;
+        }
+
+        qrClose.onclick = function() {
+            qrModal.style.display = "none";
+        }
+
+        qrModal.onclick = function(e) {
+            if (e.target !== qrModalImg) {
+                qrModal.style.display = "none";
+            }
+        }
+    }
+
     // 3. Receipt Generation helper
     async function generateReceipt() {
         var wrapper = document.getElementById('receiptWrapper');

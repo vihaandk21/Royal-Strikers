@@ -164,11 +164,17 @@
 
                 <!-- Manual UPI fallback -->
                 <div class="upi-manual" id="upiManual" style="display: none;">
-                    <p>Or scan the QR Code to pay manually:</p>
-                    <img src="images/scanner qr code image/WhatsApp Image 2026-06-11 at 18.05.03.jpeg" alt="UPI QR Code Scanner" class="qr-code-img">
+                    <p>Or scan the QR Code to pay manually (Click to enlarge):</p>
+                    <img src="images/scanner qr code image/WhatsApp Image 2026-06-11 at 18.05.03.jpeg" alt="UPI QR Code Scanner" class="qr-code-img" id="qrScannerImg">
                     <p style="margin-top: 10px;">Or use this UPI ID:</p>
                     <div class="upi-id" id="upiId">8296398607@ptaxis</div>
                     <button type="button" class="copy-btn" onclick="copyUPI()">Copy UPI ID</button>
+                </div>
+
+                <!-- QR Code Modal -->
+                <div id="qrModal" class="qr-modal">
+                    <span class="qr-close" id="qrClose">&times;</span>
+                    <img class="qr-modal-content" id="qrModalImg">
                 </div>
 
                 <!-- Transaction ID (entered AFTER payment) -->
