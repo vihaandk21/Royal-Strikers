@@ -8,6 +8,179 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👑</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* ===== UNIQUE PREMIUM RECEIPT THEME ===== */
+        /* These styles target the receipt container specifically so it captures beautifully via html2canvas */
+        #receiptCaptureBox {
+            background: linear-gradient(135deg, #0d0f12 0%, #1a1e24 100%);
+            padding: 40px;
+            border-radius: 24px;
+            width: 480px;
+            font-family: 'Poppins', sans-serif;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #ffbc00;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+
+        /* Subtle sports/volleyball background texture overlay */
+        #receiptCaptureBox::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            opacity: 0.04;
+            background-image: radial-gradient(circle at 2px 2px, #ffffff 1px, transparent 0);
+            background-size: 12px 12px;
+            pointer-events: none;
+        }
+
+        .rc-gold-glow {
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(2ff, 188, 0, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .rc-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.15);
+            padding-bottom: 25px;
+            position: relative;
+        }
+
+        .rc-header h2 {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin: 0 0 4px 0;
+            color: #ffffff;
+        }
+
+        .rc-header h2 span {
+            color: #ffbc00;
+        }
+
+        .rc-header p {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: #a0aec0;
+            margin: 0 0 15px 0;
+        }
+
+        .rc-badge {
+            display: inline-block;
+            background: rgba(255, 188, 0, 0.1);
+            color: #ffbc00;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            border: 1px solid rgba(255, 188, 0, 0.2);
+            text-transform: uppercase;
+        }
+
+        .rc-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .rc-meta-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 14px 16px;
+            border-radius: 14px;
+        }
+
+        .rc-meta-box.full-width {
+            grid-column: span 2;
+        }
+
+        .rc-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #718096;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .rc-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: #edf2f7;
+            word-break: break-all;
+        }
+
+        .rc-value.highlight {
+            color: #ffbc00;
+        }
+
+        .rc-amount-card {
+            background: linear-gradient(90deg, rgba(255, 188, 0, 0.15) 0%, rgba(255, 188, 0, 0.02) 100%);
+            border-left: 4px solid #ffbc00;
+            padding: 16px;
+            border-radius: 0 14px 14px 0;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .rc-amount-val {
+            font-size: 24px;
+            font-weight: 800;
+            color: #ffbc00;
+        }
+
+        .rc-perks {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .rc-perk-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: #cbd5e0;
+            margin-bottom: 10px;
+        }
+
+        .rc-perk-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .rc-footer {
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 20px;
+        }
+
+        .rc-footer p {
+            font-size: 12px;
+            color: #a0aec0;
+            margin: 0 0 6px 0;
+        }
+
+        .rc-footer .rc-stamp {
+            font-size: 10px;
+            color: #4a5568;
+            letter-spacing: 0.5px;
+        }
+    </style>
 </head>
 <body>
 
@@ -199,55 +372,66 @@
         </div>
     </section>
 
-    <!-- ===== RECEIPT (hidden — captured by html2canvas) ===== -->
-    <div id="receiptWrapper" style="display: none;">
-        <div id="receipt">
-            <div class="receipt-header">
-                <h2>👑 ROYAL STRIKERS</h2>
+    <!-- ===== UNIQUE HIGH-END RECEIPT (Hidden wrapper for image rendering) ===== -->
+    <div id="receiptWrapper" style="display: none; position: absolute; left: -9999px; top: -9999px;">
+        <div id="receiptCaptureBox">
+            <div class="rc-gold-glow"></div>
+            
+            <div class="rc-header">
+                <h2>ROYAL <span>STRIKERS</span></h2>
                 <p>Volleyball Tournament</p>
-                <h3>REGISTRATION RECEIPT</h3>
+                <div class="rc-badge">Official Entry Receipt</div>
             </div>
-            <div class="receipt-body">
-                <div class="receipt-row">
-                    <span>Team Name</span>
-                    <span id="r-teamName">—</span>
+
+            <div class="rc-grid">
+                <div class="rc-meta-box full-width">
+                    <span class="rc-label">Team Name</span>
+                    <div class="rc-value highlight" id="r-teamName">—</div>
                 </div>
-                <div class="receipt-row">
-                    <span>Name</span>
-                    <span id="r-name">—</span>
+                
+                <div class="rc-meta-box full-width">
+                    <span class="rc-label">Player Name</span>
+                    <div class="rc-value" id="r-name">—</div>
                 </div>
-                <div class="receipt-row">
-                    <span>Phone</span>
-                    <span id="r-phone">—</span>
+
+                <div class="rc-meta-box">
+                    <span class="rc-label">Phone Number</span>
+                    <div class="rc-value" id="r-phone">—</div>
                 </div>
-                <div class="receipt-row">
-                    <span>Level</span>
-                    <span id="r-level">—</span>
+
+                <div class="rc-meta-box">
+                    <span class="rc-label">Category Level</span>
+                    <div class="rc-value" id="r-level">—</div>
                 </div>
-                <div class="receipt-divider"></div>
-                <div class="receipt-row receipt-amount">
-                    <span>Amount Paid</span>
-                    <span id="r-amount">—</span>
+
+                <div class="rc-meta-box full-width">
+                    <span class="rc-label">UPI Transaction ID / UTR</span>
+                    <div class="rc-value" id="r-txn">—</div>
                 </div>
-                <div class="receipt-row">
-                    <span>Transaction ID</span>
-                    <span id="r-txn">—</span>
-                </div>
-                <div class="receipt-row">
-                    <span>Date</span>
-                    <span id="r-date">—</span>
-                </div>
-                <div class="receipt-divider"></div>
-                <div class="receipt-info">
-                    <p>🍽️ Lunch provided for all players</p>
-                    <p>🏐 Ball: Cosco brand</p>
-                    <p id="r-prize"></p>
-                    <p>🌧️ Event may be rescheduled in case of rain</p>
+
+                <div class="rc-meta-box full-width">
+                    <span class="rc-label">Issued Timestamp</span>
+                    <div class="rc-value" id="r-date">—</div>
                 </div>
             </div>
-            <div class="receipt-footer">
-                <p>⚠️ Present this receipt at the venue for entry</p>
-                <p class="receipt-small">Royal Strikers © 2026 — Developed by Shreesha & Vihaan</p>
+
+            <div class="rc-amount-card">
+                <div>
+                    <span class="rc-label" style="margin:0; color: rgba(255,255,255,0.6);">Total Entry Fee Paid</span>
+                </div>
+                <div class="rc-amount-val" id="r-amount">—</div>
+            </div>
+
+            <div class="rc-perks">
+                <div class="rc-perk-item"><span>🏐</span> Cosco Brand Match Volleyball</div>
+                <div class="rc-perk-item"><span>🍽️</span> Tournament Lunch Pass Included</div>
+                <div class="rc-perk-item"><span id="r-prize-icon">🏆</span> <span id="r-prize">Cash Prize (Eligible tiers)</span></div>
+                <div class="rc-perk-item"><span>🌧️</span> Bad weather contingency protection policy</div>
+            </div>
+
+            <div class="rc-footer">
+                <p>⚠️ Present this pass digital copy at venue entry desks.</p>
+                <div class="rc-stamp">Royal Strikers © 2026 — Authored by Shreesha & Vihaan</div>
             </div>
         </div>
     </div>
