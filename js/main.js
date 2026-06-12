@@ -226,12 +226,12 @@ function showToast(message, type) {
             currentAmount = 600;
             feeDisp.innerHTML = 'Fee: <strong>₹600</strong>';
             payBtn.textContent = 'Pay ₹600 via UPI';
-            document.getElementById('r-prize').textContent = '🏆 Prize: None (School Level)';
-        } else if (level === 'College Level') {
+            if (document.getElementById('r-prize')) document.getElementById('r-prize').textContent = 'None (School Level)';
+        } else if (level === 'College Level (Under 18)' || level === 'College Level') {
             currentAmount = 1000;
             feeDisp.innerHTML = 'Fee: <strong>₹1,000</strong>';
             payBtn.textContent = 'Pay ₹1,000 via UPI';
-            document.getElementById('r-prize').textContent = '🏆 Prize: Cash Prize Included';
+            if (document.getElementById('r-prize')) document.getElementById('r-prize').textContent = 'Cash Prize Included';
         }
         amtField.value = currentAmount;
         payBtn.disabled = false;
@@ -294,12 +294,13 @@ function showToast(message, type) {
 
         // Ensure visible for html2canvas
         wrapper.style.display = 'block';
+        wrapper.style.visibility = 'visible';
         wrapper.style.left = '0px';
         wrapper.style.top = '0px';
         wrapper.style.zIndex = '-100'; // keep behind
 
         try {
-            var canvas = await html2canvas(document.getElementById('receipt'), {
+            var canvas = await html2canvas(document.getElementById('receiptCaptureBox') || document.getElementById('receipt'), {
                 scale: 2, // High resolution
                 useCORS: true
             });
@@ -313,6 +314,7 @@ function showToast(message, type) {
             showToast('Failed to download receipt.', 'error');
         } finally {
             wrapper.style.display = 'none';
+            wrapper.style.visibility = 'hidden';
         }
     }
 
