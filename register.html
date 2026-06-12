@@ -351,9 +351,9 @@
 
                 <!-- Transaction ID -->
                 <div class="form-group" style="margin-top: 20px;">
-                    <label for="transactionId">UPI Transaction ID (enter after payment)</label>
+                    <label for="transactionId">UPI Transaction ID (12-digit UTR Number)</label>
                     <input type="text" id="transactionId" name="transactionId"
-                           placeholder="e.g. 426131XXXXXX or UTR number" required>
+                           placeholder="e.g. 426131456789" pattern="\d{12}" minlength="12" maxlength="12" required>
                     <p style="font-size: 12px; color: #888; margin-top: 5px;">
                         Find this in your UPI app under transaction history
                     </p>

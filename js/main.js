@@ -328,8 +328,8 @@ function showToast(message, type) {
         }
 
         var txn = document.getElementById('transactionId').value.trim();
-        if (!txn) {
-            showToast('Please enter the UPI Transaction ID.', 'error');
+        if (!/^\d{12}$/.test(txn)) {
+            showToast('Please enter a valid 12-digit UPI Transaction ID (UTR number). Do not enter your UPI ID.', 'error');
             document.getElementById('transactionId').focus();
             return;
         }
