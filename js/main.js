@@ -79,20 +79,7 @@ function showToast(message, type) {
     // Only run on register page
     if (!aadhaarInput || !status) return;
 
-    /**
-     * Calculates age in years from a Date of Birth.
-     * @param {Date} dob
-     * @returns {number}
-     */
-    function calculateAge(dob) {
-        var today = new Date();
-        var age = today.getFullYear() - dob.getFullYear();
-        var m = today.getMonth() - dob.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
-            age--;
-        }
-        return age;
-    }
+    // Age logic relies on direct DOB cutoff Date comparison.
 
     // Removed getAgeCategory since age category is no longer used
 
@@ -186,13 +173,15 @@ function showToast(message, type) {
             var dob = extractDOB(text);
 
             if (dob) {
-                var age = calculateAge(dob);
-                if (age >= 18) {
-                    status.innerHTML = '<span class="warning">❌ Registration blocked: Age is 18 or older (' + age + ' years). Only Under 18 players are allowed.</span>';
+                var cutoffDate = new Date(2005, 6, 8); // July 8, 2005
+                var dobString = dob.toLocaleDateString();
+
+                if (dob < cutoffDate) {
+                    status.innerHTML = '<span class="warning">❌ Registration blocked: DOB is ' + dobString + ' (Before cutoff: July 8, 2005). Only eligible players are allowed.</span>';
                     document.getElementById('payBtn').disabled = true;
                     document.getElementById('submitBtn').disabled = true;
-                } else if (age >= 1 && age < 18) {
-                    status.innerHTML = '<span class="verified">✅ Age verified: ' + age + ' years (Under 18). You may proceed.</span>';
+                } else if (dob >= cutoffDate) {
+                    status.innerHTML = '<span class="verified">✅ DOB verified: ' + dobString + '. You may proceed.</span>';
                     if (document.getElementById('level').value) {
                         document.getElementById('payBtn').disabled = false;
                         document.getElementById('submitBtn').disabled = false;
