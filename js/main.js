@@ -281,6 +281,10 @@ function showToast(message, type) {
         // Populate data
         document.getElementById('r-name').textContent = document.getElementById('fullName').value;
         document.getElementById('r-phone').textContent = document.getElementById('phone').value;
+        var teamNameInput = document.getElementById('teamName');
+        if (teamNameInput && document.getElementById('r-teamName')) {
+            document.getElementById('r-teamName').textContent = teamNameInput.value || 'N/A';
+        }
         document.getElementById('r-level').textContent = document.getElementById('level').value;
         document.getElementById('r-amount').textContent = '₹' + currentAmount;
         document.getElementById('r-txn').textContent = document.getElementById('transactionId').value;
@@ -356,6 +360,7 @@ function showToast(message, type) {
                 var waMessage = "Hello Royal Strikers! I have registered for the tournament.\n\n" +
                     "Name: " + document.getElementById('fullName').value + "\n" +
                     "Phone: " + document.getElementById('phone').value + "\n" +
+                    "Team Name: " + (document.getElementById('teamName') ? document.getElementById('teamName').value : 'N/A') + "\n" +
                     "Level: " + document.getElementById('level').value + "\n" +
                     "Transaction ID: " + document.getElementById('transactionId').value + "\n\n" +
                     "*(Please find attached my downloaded receipt, along with my Aadhaar/School ID proofs)*";
