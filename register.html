@@ -95,8 +95,17 @@
                 <input type="hidden" name="sport" value="Volleyball">
                 <!-- Admin contact: +91 82963 98607 -->
 
-                <!-- ── Section 1: Personal Details ── -->
-                <h3 class="form-section-title">Personal Details</h3>
+                <!-- ── Section 1: Team Details ── -->
+                <h3 class="form-section-title">Team Details</h3>
+
+                <div class="form-group">
+                    <label for="teamName">Team Name</label>
+                    <input type="text" id="teamName" name="teamName"
+                           placeholder="Enter your squad or club name" required>
+                </div>
+
+                <!-- ── Section 2: Personal Details ── -->
+                <h3 class="form-section-title" style="margin-top: 30px;">Personal Details</h3>
 
                 <div class="form-group">
                     <label for="fullName">Full Name</label>
@@ -121,7 +130,7 @@
                     </select>
                 </div>
 
-                <!-- ── Section 2: Documents ── -->
+                <!-- ── Section 3: Documents ── -->
                 <h3 class="form-section-title" style="margin-top: 30px;">Documents</h3>
                 <p style="font-size: 13px; color: #aaa; margin-bottom: 15px; line-height: 1.4;">
                     <em>Note: Your documents will be scanned automatically to verify your age category. For security, they are not uploaded to our server. You will be prompted to send them to us via WhatsApp after submission.</em>
@@ -140,7 +149,7 @@
                            accept="image/*,.pdf" required>
                 </div>
 
-                <!-- ── Section 3: Payment ── -->
+                <!-- ── Section 4: Payment ── -->
                 <h3 class="form-section-title" style="margin-top: 30px;">Payment</h3>
 
                 <!-- Dynamic fee display -->
@@ -199,6 +208,10 @@
                 <h3>REGISTRATION RECEIPT</h3>
             </div>
             <div class="receipt-body">
+                <div class="receipt-row">
+                    <span>Team Name</span>
+                    <span id="r-teamName">—</span>
+                </div>
                 <div class="receipt-row">
                     <span>Name</span>
                     <span id="r-name">—</span>
