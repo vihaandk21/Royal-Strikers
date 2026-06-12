@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="css/styles.css">
     <style>
         /* ===== UNIQUE PREMIUM RECEIPT THEME ===== */
-        /* These styles target the receipt container specifically so it captures beautifully via html2canvas */
+        /* Targets the receipt container specifically for a flawless html2canvas capture */
         #receiptCaptureBox {
             background: linear-gradient(135deg, #0d0f12 0%, #1a1e24 100%);
             padding: 40px;
@@ -41,7 +41,7 @@
             right: -100px;
             width: 250px;
             height: 250px;
-            background: radial-gradient(circle, rgba(2ff, 188, 0, 0.15) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(255, 188, 0, 0.15) 0%, transparent 70%);
             border-radius: 50%;
             pointer-events: none;
         }
@@ -266,7 +266,6 @@
                 <input type="hidden" name="subject" value="New Registration — Royal Strikers">
                 <input type="hidden" name="from_name" value="Royal Strikers Website">
                 <input type="hidden" name="sport" value="Volleyball">
-                <!-- Admin contact: +91 82963 98607 -->
 
                 <!-- ── Section 1: Team Details ── -->
                 <h3 class="form-section-title">Team Details</h3>
@@ -330,7 +329,7 @@
                     <p>Select your level above to see the fee.</p>
                 </div>
 
-                <!-- Pay via UPI button (not submit — just opens UPI) -->
+                <!-- Pay via UPI button -->
                 <button type="button" class="pay-btn" id="payBtn" disabled>
                     Select level first
                 </button>
@@ -350,7 +349,7 @@
                     <img class="qr-modal-content" id="qrModalImg">
                 </div>
 
-                <!-- Transaction ID (entered AFTER payment) -->
+                <!-- Transaction ID -->
                 <div class="form-group" style="margin-top: 20px;">
                     <label for="transactionId">UPI Transaction ID (enter after payment)</label>
                     <input type="text" id="transactionId" name="transactionId"
@@ -360,7 +359,7 @@
                     </p>
                 </div>
 
-                <!-- Hidden field for amount (set by JS) -->
+                <!-- Hidden field for amount -->
                 <input type="hidden" id="amountField" name="amountPaid" value="">
 
                 <!-- Submit & Generate Receipt -->
@@ -372,8 +371,8 @@
         </div>
     </section>
 
-    <!-- ===== UNIQUE HIGH-END RECEIPT (Hidden wrapper for image rendering) ===== -->
-    <div id="receiptWrapper" style="display: none; position: absolute; left: -9999px; top: -9999px;">
+    <!-- ===== EXTENSION: OFFSCREEN HIGH-END RECEIPT (Render-Safe Layout) ===== -->
+    <div id="receiptWrapper" style="position: absolute; left: -9999px; top: -9999px; visibility: hidden;">
         <div id="receiptCaptureBox">
             <div class="rc-gold-glow"></div>
             
