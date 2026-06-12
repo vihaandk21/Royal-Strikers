@@ -94,19 +94,7 @@ function showToast(message, type) {
         return age;
     }
 
-    /**
-     * Maps a numeric age to the tournament age category.
-     * Must match the <option> values in register.html.
-     * @param {number} age
-     * @returns {string}
-     */
-    function getAgeCategory(age) {
-        if (age < 9)  return 'Under 9';
-        if (age < 12) return 'Under 12';
-        if (age < 16) return 'Under 16';
-        if (age < 19) return 'Under 19';
-        return 'Open';
-    }
+    // Removed getAgeCategory since age category is no longer used
 
     /**
      * Attempts to extract a Date of Birth from OCR text.
@@ -171,7 +159,7 @@ function showToast(message, type) {
 
         // PDFs can't be OCR'd client-side — skip gracefully
         if (!file.type.startsWith('image/')) {
-            status.innerHTML = '<span class="warning">📄 PDF uploaded — please select age category manually.</span>';
+            status.innerHTML = '<span class="warning">📄 PDF uploaded — we will verify your document manually via WhatsApp.</span>';
             return;
         }
 
@@ -199,20 +187,26 @@ function showToast(message, type) {
 
             if (dob) {
                 var age = calculateAge(dob);
-                if (age >= 1 && age <= 100) {
-                    var category = getAgeCategory(age);
-                    document.getElementById('ageCategory').value = category;
-                    status.innerHTML = '<span class="verified">✅ Age detected: ' + age + ' years → Auto-selected: ' + category + '</span>';
+                if (age >= 18) {
+                    status.innerHTML = '<span class="warning">❌ Registration blocked: Age is 18 or older (' + age + ' years). Only Under 18 players are allowed.</span>';
+                    document.getElementById('payBtn').disabled = true;
+                    document.getElementById('submitBtn').disabled = true;
+                } else if (age >= 1 && age < 18) {
+                    status.innerHTML = '<span class="verified">✅ Age verified: ' + age + ' years (Under 18). You may proceed.</span>';
+                    if (document.getElementById('level').value) {
+                        document.getElementById('payBtn').disabled = false;
+                        document.getElementById('submitBtn').disabled = false;
+                    }
                 } else {
-                    status.innerHTML = '<span class="warning">⚠️ Could not determine valid age. Please select category manually.</span>';
+                    status.innerHTML = '<span class="warning">⚠️ Could not determine valid age. We will verify manually via WhatsApp.</span>';
                 }
             } else {
-                status.innerHTML = '<span class="warning">⚠️ Could not read date of birth. Please select age category manually. (Check console for raw output)</span>';
+                status.innerHTML = '<span class="warning">⚠️ Could not read date of birth. We will verify manually via WhatsApp. (Check console for raw output)</span>';
             }
         } catch (err) {
             clearTimeout(timeoutId);
             console.warn('Aadhaar OCR error:', err);
-            status.innerHTML = '<span class="warning">⚠️ Auto-verification unavailable. Please select age category manually.</span>';
+            status.innerHTML = '<span class="warning">⚠️ Auto-verification unavailable. We will verify manually via WhatsApp.</span>';
         }
     });
 })();
@@ -299,7 +293,6 @@ function showToast(message, type) {
         document.getElementById('r-name').textContent = document.getElementById('fullName').value;
         document.getElementById('r-phone').textContent = document.getElementById('phone').value;
         document.getElementById('r-level').textContent = document.getElementById('level').value;
-        document.getElementById('r-age').textContent = document.getElementById('ageCategory').value;
         document.getElementById('r-amount').textContent = '₹' + currentAmount;
         document.getElementById('r-txn').textContent = document.getElementById('transactionId').value;
 
@@ -375,7 +368,6 @@ function showToast(message, type) {
                     "Name: " + document.getElementById('fullName').value + "\n" +
                     "Phone: " + document.getElementById('phone').value + "\n" +
                     "Level: " + document.getElementById('level').value + "\n" +
-                    "Age Category: " + document.getElementById('ageCategory').value + "\n" +
                     "Transaction ID: " + document.getElementById('transactionId').value + "\n\n" +
                     "*(Please find attached my downloaded receipt, along with my Aadhaar/School ID proofs)*";
                 
