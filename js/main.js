@@ -359,8 +359,24 @@ function showToast(message, type) {
             var result = await response.json();
 
             if (result.success) {
-                showToast('Registration successful! Downloading receipt...', 'success');
+                showToast('Registration successful! Downloading receipt and opening WhatsApp...', 'success');
                 await generateReceipt();
+
+                // Prepare WhatsApp Message
+                var waMessage = "Hello Royal Strikers! I have registered for the tournament.\n\n" +
+                    "Name: " + document.getElementById('fullName').value + "\n" +
+                    "Phone: " + document.getElementById('phone').value + "\n" +
+                    "Level: " + document.getElementById('level').value + "\n" +
+                    "Age Category: " + document.getElementById('ageCategory').value + "\n" +
+                    "Transaction ID: " + document.getElementById('transactionId').value + "\n\n" +
+                    "*(Please find my downloaded receipt attached below)*";
+                
+                var waUrl = "https://api.whatsapp.com/send?phone=918296398607&text=" + encodeURIComponent(waMessage);
+
+                // Open WhatsApp after a short delay so the receipt can download
+                setTimeout(function() {
+                    window.open(waUrl, '_blank');
+                }, 1500);
 
                 // Keep button disabled to prevent double submission
                 submitBtn.innerHTML = '✅ Registration Complete';
