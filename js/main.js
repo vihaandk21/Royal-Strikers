@@ -351,6 +351,12 @@ function showToast(message, type) {
 
         try {
             var formData = new FormData(form);
+            
+            // Web3Forms Free Tier blocks file uploads. 
+            // We remove the files from the payload since the user will send them via WhatsApp instead.
+            formData.delete('aadhaar');
+            formData.delete('schoolId');
+
             var response = await fetch('https://api.web3forms.com/submit', {
                 method: 'POST',
                 body: formData
@@ -369,7 +375,7 @@ function showToast(message, type) {
                     "Level: " + document.getElementById('level').value + "\n" +
                     "Age Category: " + document.getElementById('ageCategory').value + "\n" +
                     "Transaction ID: " + document.getElementById('transactionId').value + "\n\n" +
-                    "*(Please find my downloaded receipt attached below)*";
+                    "*(Please find attached my downloaded receipt, along with my Aadhaar/School ID proofs)*";
                 
                 var waUrl = "https://api.whatsapp.com/send?phone=918296398607&text=" + encodeURIComponent(waMessage);
 
