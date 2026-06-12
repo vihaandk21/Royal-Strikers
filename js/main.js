@@ -93,7 +93,8 @@ function showToast(message, type) {
      */
     function extractDOB(text) {
         // Pattern 1: Full date DD/MM/YYYY or DD-MM-YYYY or DD.MM.YYYY
-        var fullDate = text.match(/(\d{2})[\/\-\.](\d{2})[\/\-\.](\d{4})/);
+        // Added tolerance for spaces and common OCR misreads of slashes (|, l, I)
+        var fullDate = text.match(/(\d{2})\s*[\/\-\.\|lI]\s*(\d{2})\s*[\/\-\.\|lI]\s*(\d{4})/);
         if (fullDate) {
             var day   = parseInt(fullDate[1], 10);
             var month = parseInt(fullDate[2], 10) - 1;
@@ -104,7 +105,8 @@ function showToast(message, type) {
         }
 
         // Pattern 2: Year of Birth only (some Aadhaar cards show only year)
-        var yobMatch = text.match(/(?:year|yob|birth)[:\s]*(\d{4})/i);
+        // Added tolerance for noise characters between the word and the year
+        var yobMatch = text.match(/(?:year|yob|birth|dob)[^\d]{0,8}(\d{4})/i);
         if (yobMatch) {
             var y = parseInt(yobMatch[1], 10);
             if (y > 1920 && y < 2027) {
@@ -113,6 +115,35 @@ function showToast(message, type) {
         }
 
         return null;
+    }
+
+    /**
+     * Pre-processes the image by scaling, converting to grayscale, and bumping contrast.
+     * This drastically improves Tesseract OCR accuracy.
+     */
+    function preprocessImageForOCR(file) {
+        return new Promise(function(resolve, reject) {
+            var img = new Image();
+            var url = URL.createObjectURL(file);
+            img.onload = function() {
+                URL.revokeObjectURL(url);
+                var canvas = document.createElement('canvas');
+                var ctx = canvas.getContext('2d');
+                
+                // Scale up if image is small (helps Tesseract resolve characters)
+                var scale = (img.width < 1000) ? 2 : 1;
+                canvas.width = img.width * scale;
+                canvas.height = img.height * scale;
+                
+                // Apply high-contrast grayscale filter
+                ctx.filter = 'grayscale(100%) contrast(250%)';
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                
+                resolve(canvas.toDataURL('image/png'));
+            };
+            img.onerror = reject;
+            img.src = url;
+        });
     }
 
     /**
@@ -161,12 +192,11 @@ function showToast(message, type) {
         });
 
         try {
-            var imageUrl = URL.createObjectURL(file);
+            var enhancedImageUrl = await preprocessImageForOCR(file);
 
-            var ocrPromise = loadAndRunOCR(imageUrl);
+            var ocrPromise = loadAndRunOCR(enhancedImageUrl);
             var text = await Promise.race([ocrPromise, timeoutPromise]);
             clearTimeout(timeoutId);
-            URL.revokeObjectURL(imageUrl);
 
             console.log("OCR Raw Output:\n", text); // Helpful for debugging
 
