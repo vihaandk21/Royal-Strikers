@@ -211,9 +211,9 @@ section {
 
 .card img {
     width: 100%;
-    height: 250px;
-    object-fit: cover;
-    background: #222;
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+    background: #000;
 }
 
 .card-content {
