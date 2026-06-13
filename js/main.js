@@ -575,7 +575,17 @@ document.addEventListener("DOMContentLoaded", () => {
     // 1. Preloader Loading Bar & Masked Text Reveals
     const loadingBar = document.getElementById('preloader-bar');
     const preloaderWrap = document.getElementById('preloader');
-    const heroVideo = document.querySelector('.hero-video');
+    
+    // Find which video is actually active/visible based on CSS media queries
+    const desktopVideo = document.querySelector('.hero-video-desktop');
+    const mobileVideo = document.querySelector('.hero-video-mobile');
+    let activeVideo = null;
+    
+    if (desktopVideo && window.getComputedStyle(desktopVideo).display !== 'none') {
+        activeVideo = desktopVideo;
+    } else if (mobileVideo && window.getComputedStyle(mobileVideo).display !== 'none') {
+        activeVideo = mobileVideo;
+    }
     
     if (loadingBar && preloaderWrap) {
         let isLoaded = false;
@@ -593,8 +603,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         preloaderWrap.style.display = 'none';
                         
                         // Force video to play if autoplay failed
-                        if (heroVideo) {
-                            heroVideo.play().catch(err => console.warn("Video play failed:", err));
+                        if (activeVideo) {
+                            activeVideo.play().catch(err => console.warn("Video play failed:", err));
                         }
                         
                         // Trigger Masked Text Reveals
@@ -615,16 +625,16 @@ document.addEventListener("DOMContentLoaded", () => {
             finishPreloader();
         }, 5000);
 
-        // Listen for video loaded
-        if (heroVideo) {
+        // Listen for active video loaded
+        if (activeVideo) {
             // If the video is already ready before JS executes
-            if (heroVideo.readyState >= 3) {
+            if (activeVideo.readyState >= 3) {
                 finishPreloader();
             } else {
-                heroVideo.addEventListener('canplay', finishPreloader);
+                activeVideo.addEventListener('canplay', finishPreloader);
             }
         } else {
-            // Fallback if no video element
+            // Fallback if no active video element
             setTimeout(finishPreloader, 2000);
         }
     }
