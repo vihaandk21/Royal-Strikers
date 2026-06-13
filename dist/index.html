@@ -49,30 +49,89 @@
         </ul>
     </nav>
 
-    <!-- ===== HERO SECTION ===== -->
-    <section class="hero" style="position: relative; overflow: hidden; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #050505;">
-        <!-- Background Video -->
-        <video autoplay muted loop playsinline poster="/assets/throwball-DeJKqpmr.jpg" class="hero-video" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.7; z-index: 0;">
-            <source src="/video.mp4" type="video/mp4">
-        </video>
-        
-        <!-- Overlay Gradient -->
-        <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(5,5,5,0.3) 0%, rgba(5,5,5,0.9) 100%); z-index: 1;"></div>
+    <style>
+        /* Responsive Hybrid Hero Layout */
+        .hybrid-hero {
+            position: relative;
+            background: #050505;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            min-height: 100vh; /* Default desktop full screen */
+        }
+        .hero-video-box {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        .hero-video-box video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.7;
+        }
+        .hero-text-box {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 20px;
+        }
 
-        <h1 style="display: flex; flex-direction: column; align-items: center; gap: 0; z-index: 2; margin: 0; width: 100%; padding: 0 20px;">
-            <span class="mask-wrap" style="overflow: hidden; display: block;"><span class="mask-text" style="display: block; font-size: clamp(3rem, 12vw, 8rem); line-height: 1;">ROYAL</span></span>
-            <span class="mask-wrap" style="overflow: hidden; display: block;"><span class="mask-text" style="display: block; color: var(--gold-primary); font-size: clamp(3rem, 12vw, 8rem); line-height: 1;">STRIKERS</span></span>
-        </h1>
-        <p class="mask-wrap" style="overflow: hidden; display: block; z-index: 2; margin-top: 20px; margin-bottom: 0;">
-            <span class="mask-text" style="display: block; font-size: clamp(1rem, 4vw, 1.5rem); max-width: 800px; text-align: center; margin: 0 auto; line-height: 1.5; padding: 0 20px;">
-                Where champions rise. Join the most exciting community for
-                competitive Volleyball tournaments.
-            </span>
-        </p>
-        <div class="buttons mask-wrap" style="overflow: hidden; display: block; padding-top: 30px; z-index: 2;">
-            <div class="mask-text" style="display: flex; gap: 1.5rem; justify-content: center;">
-                <a href="register.html" class="btn primary">Register Now</a>
-                <a href="#sports" class="btn secondary">Explore</a>
+        /* Mobile specific stacking */
+        @media (max-width: 768px) {
+            .hybrid-hero {
+                flex-direction: column;
+                justify-content: flex-start;
+                min-height: auto; /* Let it grow naturally */
+                padding-bottom: 50px;
+            }
+            .hero-video-box {
+                position: relative;
+                height: auto;
+                aspect-ratio: 2 / 1; /* Keep exact ratio, no cropping */
+                width: 100%;
+            }
+            .hero-text-box {
+                margin-top: -30px; /* Pull text up to slightly overlap video */
+            }
+        }
+    </style>
+
+    <!-- ===== HERO SECTION ===== -->
+    <section class="hybrid-hero">
+        
+        <!-- Background Video Box -->
+        <div class="hero-video-box">
+            <video autoplay muted loop playsinline poster="/assets/throwball-DeJKqpmr.jpg">
+                <source src="/video.mp4" type="video/mp4">
+            </video>
+            <!-- Overlay Gradient -->
+            <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(5,5,5,0.1) 0%, rgba(5,5,5,1) 100%);"></div>
+        </div>
+
+        <!-- Text Content Box -->
+        <div class="hero-text-box">
+            <h1 style="display: flex; flex-direction: column; align-items: center; gap: 0; margin: 0; width: 100%;">
+                <span class="mask-wrap" style="overflow: hidden; display: block;"><span class="mask-text" style="display: block; font-size: clamp(3.5rem, 15vw, 8rem); line-height: 1;">ROYAL</span></span>
+                <span class="mask-wrap" style="overflow: hidden; display: block;"><span class="mask-text" style="display: block; color: var(--gold-primary); font-size: clamp(3.5rem, 15vw, 8rem); line-height: 1;">STRIKERS</span></span>
+            </h1>
+            <p class="mask-wrap" style="overflow: hidden; display: block; margin-top: 15px; margin-bottom: 0;">
+                <span class="mask-text" style="display: block; font-size: clamp(1rem, 4vw, 1.5rem); max-width: 800px; text-align: center; margin: 0 auto; line-height: 1.5; color: #ddd;">
+                    Where champions rise. Join the most exciting community for
+                    competitive Volleyball tournaments.
+                </span>
+            </p>
+            <div class="buttons mask-wrap" style="overflow: hidden; display: block; padding-top: 30px;">
+                <div class="mask-text" style="display: flex; gap: 1.5rem; justify-content: center;">
+                    <a href="register.html" class="btn primary">Register Now</a>
+                    <a href="#sports" class="btn secondary">Explore</a>
+                </div>
             </div>
         </div>
     </section>
@@ -92,7 +151,7 @@
           <div class="luxury-editorial">
               <div class="editorial-block left">
                   <div class="img-wrapper" data-scroll>
-                      <img src="/assets/WhatsApp%20Image%202026-06-12%20at%2016.53.42-Tuuiz_OP.jpeg" alt="Volleyball game" loading="lazy">
+                      <img src="/assets/WhatsApp%20Image%202026-06-12%20at%2016.52.00-Tuuiz_OP.jpeg" alt="Volleyball game" loading="lazy">
                   </div>
                   <div class="text-content">
                       <h3 class="stagger-text">INTENSE MATCHES</h3>
@@ -102,7 +161,7 @@
 
               <div class="editorial-block right" style="margin-top: 10rem;">
                   <div class="img-wrapper" data-scroll>
-                      <img src="/assets/WhatsApp%20Image%202026-06-12%20at%2016.53.51-BxFaeTqj.jpeg" alt="Volleyball action" loading="lazy">
+                      <img src="/assets/WhatsApp%20Image%202026-06-12%20at%2016.52.01-BxFaeTqj.jpeg" alt="Volleyball action" loading="lazy">
                   </div>
                   <div class="text-content">
                       <h3 class="stagger-text">EPIC PLAYS</h3>
@@ -112,7 +171,7 @@
 
               <div class="editorial-block left" style="margin-top: 10rem;">
                   <div class="img-wrapper" data-scroll>
-                      <img src="/assets/WhatsApp%20Image%202026-06-12%20at%2016.53.52-dmT_tFa3.jpeg" alt="Volleyball team" loading="lazy">
+                      <img src="/assets/WhatsApp%20Image%202026-06-12%20at%2016.52.02-dmT_tFa3.jpeg" alt="Volleyball team" loading="lazy">
                   </div>
                   <div class="text-content">
                       <h3 class="stagger-text">TEAM SPIRIT</h3>
