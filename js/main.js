@@ -575,13 +575,17 @@ document.addEventListener("DOMContentLoaded", () => {
     // 1. Preloader Loading Bar & Masked Text Reveals
     const loadingBar = document.getElementById('preloader-bar');
     const preloaderWrap = document.getElementById('preloader');
+    const heroVideo = document.querySelector('.hero-video');
     
     if (loadingBar && preloaderWrap) {
-        // Animate loading bar width to 100%
-        animate(loadingBar, { width: ["0%", "100%"] }, { 
-            duration: 2.0, 
-            ease: "circOut",
-            onComplete: () => {
+        let isLoaded = false;
+        
+        const finishPreloader = () => {
+            if (isLoaded) return;
+            isLoaded = true;
+            
+            // Snap bar to 100% quickly
+            animate(loadingBar, { width: "100%" }, { duration: 0.3, ease: "easeOut" }).then(() => {
                 // Hold for 1 second before fading out
                 setTimeout(() => {
                     // Fade out preloader
@@ -595,8 +599,29 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
                     });
                 }, 1000);
+            });
+        };
+
+        // Start a slow progressive loading bar that takes 5 seconds to reach 90%
+        animate(loadingBar, { width: ["0%", "90%"] }, { duration: 5.0, ease: "circOut" });
+
+        // Max 5 seconds timeout
+        setTimeout(() => {
+            finishPreloader();
+        }, 5000);
+
+        // Listen for video loaded
+        if (heroVideo) {
+            // If the video is already ready before JS executes
+            if (heroVideo.readyState >= 3) {
+                finishPreloader();
+            } else {
+                heroVideo.addEventListener('canplay', finishPreloader);
             }
-        });
+        } else {
+            // Fallback if no video element
+            setTimeout(finishPreloader, 2000);
+        }
     }
 
     // 2. 3D Tilt Gallery Cards
