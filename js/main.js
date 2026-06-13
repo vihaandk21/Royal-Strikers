@@ -252,15 +252,21 @@ function showToast(message, type) {
                         document.getElementById('submitBtn').disabled = false;
                     }
                 } else {
-                    status.innerHTML = '<span class="warning">⚠️ Could not determine valid age. We will verify manually via WhatsApp.</span>';
+                    status.innerHTML = '<span class="warning">❌ Registration blocked: Could not determine valid age. Please upload a clear Aadhaar image.</span>';
+                    document.getElementById('payBtn').disabled = true;
+                    document.getElementById('submitBtn').disabled = true;
                 }
             } else {
-                status.innerHTML = '<span class="warning">⚠️ Could not read date of birth. We will verify manually via WhatsApp. (Check console for raw output)</span>';
+                status.innerHTML = '<span class="warning">❌ Registration blocked: Could not read date of birth. Please upload a clear Aadhaar image.</span>';
+                document.getElementById('payBtn').disabled = true;
+                document.getElementById('submitBtn').disabled = true;
             }
         } catch (err) {
             clearTimeout(timeoutId);
             console.warn('Aadhaar OCR error:', err);
-            status.innerHTML = '<span class="warning">⚠️ Auto-verification unavailable. We will verify manually via WhatsApp.</span>';
+            status.innerHTML = '<span class="warning">❌ Registration blocked: Auto-verification failed. Please upload a clearer Aadhaar image.</span>';
+            document.getElementById('payBtn').disabled = true;
+            document.getElementById('submitBtn').disabled = true;
         }
     });
 })();
@@ -363,6 +369,7 @@ function showToast(message, type) {
         wrapper.style.zIndex = '-100'; // keep behind
 
         try {
+            await new Promise(resolve => setTimeout(resolve, 100)); // Yield thread to allow DOM paint cycle
             var canvas = await html2canvas(document.getElementById('receiptCaptureBox') || document.getElementById('receipt'), {
                 scale: 2, // High resolution
                 useCORS: true
@@ -482,3 +489,11 @@ function copyUPI() {
         showToast('UPI ID copied!', 'success');
     }
 }
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    const copyBtn = document.getElementById("copyUpiBtn");
+    if (copyBtn) {
+        copyBtn.addEventListener("click", copyUPI);
+    }
+});
