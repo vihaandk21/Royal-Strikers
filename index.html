@@ -14,6 +14,12 @@
 </head>
 <body>
 
+    <!-- Cinematic Preloader -->
+    <div id="preloader" style="position: fixed; inset: 0; background: #050505; z-index: 99999; display: flex; align-items: center; justify-content: center;">
+        <h1 id="preloader-text" style="font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 3rem; color: #D4AF37; letter-spacing: 0.1em; opacity: 0; transform: translateY(20px);">ROYAL STRIKERS</h1>
+    </div>
+
+
     <!-- ===== NAVIGATION ===== -->
     <nav>
         <a href="index.html" class="logo">ROYAL STRIKERS</a>
@@ -57,40 +63,40 @@
     <!-- ===== SPORTS SECTION ===== -->
     <section id="sports">
         <h2 class="title">Volleyball Action</h2>
-        <div class="cards">
+        
+          <div class="luxury-editorial">
+              <div class="editorial-block left">
+                  <div class="img-wrapper" data-scroll>
+                      <img src="images/volleyball images(in main page)/WhatsApp Image 2026-06-12 at 16.52.00.jpeg" alt="Volleyball game" loading="lazy">
+                  </div>
+                  <div class="text-content">
+                      <h3 class="stagger-text">INTENSE MATCHES</h3>
+                      <p>Action-packed volleyball competitions across school and college levels. Experience raw athleticism and unwavering dedication on the court.</p>
+                  </div>
+              </div>
 
-            <div class="card">
-                <img src="images/volleyball images(in main page)/WhatsApp Image 2026-06-12 at 16.52.00.jpeg"
-                     alt="Volleyball game" loading="lazy">
-                <div class="card-content">
-                    <h3>Intense Matches</h3>
-                    <p>Action-packed volleyball competitions across school and college levels.</p>
-                </div>
-            </div>
+              <div class="editorial-block right" style="margin-top: 10rem;">
+                  <div class="img-wrapper" data-scroll>
+                      <img src="images/volleyball images(in main page)/WhatsApp Image 2026-06-12 at 16.52.01.jpeg" alt="Volleyball action" loading="lazy">
+                  </div>
+                  <div class="text-content">
+                      <h3 class="stagger-text">EPIC PLAYS</h3>
+                      <p>Witness incredible spikes, blocks, and teamwork. Our players redefine the boundaries of competitive sportsmanship.</p>
+                  </div>
+              </div>
 
-            <div class="card">
-                <img src="images/volleyball images(in main page)/WhatsApp Image 2026-06-12 at 16.52.01.jpeg"
-                     alt="Volleyball action" loading="lazy">
-                <div class="card-content">
-                    <h3>Epic Plays</h3>
-                    <p>Witness incredible spikes, blocks, and teamwork.</p>
-                </div>
-            </div>
+              <div class="editorial-block left" style="margin-top: 10rem;">
+                  <div class="img-wrapper" data-scroll>
+                      <img src="images/volleyball images(in main page)/WhatsApp Image 2026-06-12 at 16.52.02.jpeg" alt="Volleyball team" loading="lazy">
+                  </div>
+                  <div class="text-content">
+                      <h3 class="stagger-text">TEAM SPIRIT</h3>
+                      <p>Build lasting memories and compete for the ultimate prize. Brotherhood and strategy are the keys to our dynasty.</p>
+                  </div>
+              </div>
+          </div>
 
-            <div class="card">
-                <img src="images/volleyball images(in main page)/WhatsApp Image 2026-06-12 at 16.52.02.jpeg"
-                     alt="Volleyball team" loading="lazy">
-                <div class="card-content">
-                    <h3>Team Spirit</h3>
-                    <p>Build lasting memories and compete for the ultimate prize.</p>
-                </div>
-            </div>
-
-        </div>
-        <div style="text-align: center; margin-top: 50px;">
-            <a href="gallery.html" class="btn secondary">View Full Gallery</a>
-        </div>
-    </section>
+      </section>
 
     <!-- ===== ABOUT SECTION ===== -->
     <section id="about">
@@ -138,6 +144,6 @@
     <!-- Toast container -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <script src="js/main.js"></script>
+    <script type="module" src="/js/main.js"></script>
 </body>
 </html>
