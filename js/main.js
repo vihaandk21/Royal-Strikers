@@ -532,6 +532,32 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    
+    // 4. Cinematic Page Transitions
+    const transitionEl = document.getElementById('page-transition');
+    
+    // Animate OUT (when page loads)
+    if (transitionEl) {
+        animate(transitionEl, { y: ["0%", "-100%"] }, { duration: 0.8, ease: [0.76, 0, 0.24, 1] }).then(() => {
+            transitionEl.style.display = 'none';
+        });
+    }
+
+    // Intercept links for Animate IN
+    document.querySelectorAll('a').forEach(anchor => {
+        anchor.addEventListener('click', (e) => {
+            const href = anchor.getAttribute('href');
+            // Check if internal link and not a hash
+            if (href && !href.startsWith('#') && !href.startsWith('http') && !anchor.hasAttribute('target')) {
+                e.preventDefault();
+                transitionEl.style.display = 'block';
+                animate(transitionEl, { y: ["100%", "0%"] }, { duration: 0.6, ease: [0.76, 0, 0.24, 1] }).then(() => {
+                    window.location.href = href;
+                });
+            }
+        });
+    });
+
     // 3. Spotlight Cards
     const cards = document.querySelectorAll('.card');
     cards.forEach(card => {

@@ -1221,3 +1221,69 @@ h1, h2, h3, .royal-title {
 }
 
 /* Noise overlay bump */
+
+
+/* UX Overhaul: Page Transitions */
+.page-transition {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: var(--bg-dark);
+    z-index: 999999;
+    transform: translateY(100%);
+    pointer-events: none;
+}
+
+/* UX Overhaul: Haptic Feedback */
+a, button, .btn, .card {
+    transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), background 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+a:active, button:active, .btn:active {
+    transform: scale(0.96) !important;
+}
+
+.card:active {
+    transform: scale(0.98) !important;
+}
+
+/* UX Overhaul: Floating Labels */
+.form-group.floating {
+    position: relative;
+    padding-top: 15px;
+}
+
+.form-group.floating input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0;
+    padding: 10px 0;
+    color: #fff;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.form-group.floating input:focus {
+    border-bottom: 2px solid var(--gold-primary);
+    box-shadow: 0 4px 10px -4px var(--gold-glow);
+}
+
+.form-group.floating label {
+    position: absolute;
+    top: 25px;
+    left: 0;
+    font-size: 1rem;
+    color: #888;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.form-group.floating input:focus + label,
+.form-group.floating input:not(:placeholder-shown) + label {
+    top: 0;
+    font-size: 0.75rem;
+    color: var(--gold-primary);
+    letter-spacing: 0.05em;
+}
