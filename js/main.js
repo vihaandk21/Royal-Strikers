@@ -479,9 +479,10 @@ function showToast(message, type) {
                 
                 var waUrl = "https://api.whatsapp.com/send?phone=918296398607&text=" + encodeURIComponent(waMessage);
 
-                // Open WhatsApp after a short delay so the receipt can download
+                // Navigate to WhatsApp after a short delay so the receipt can download
+                // Using window.location.href bypasses popup blockers because it's a top-level navigation
                 setTimeout(function() {
-                    window.open(waUrl, '_blank');
+                    window.location.href = waUrl;
                 }, 1500);
 
                 // Keep button disabled to prevent double submission
