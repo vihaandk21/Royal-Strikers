@@ -363,7 +363,6 @@ function showToast(message, type) {
         var date = new Date();
         document.getElementById('r-date').textContent = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
 
-        // Ensure visible for html2canvas
         wrapper.style.display = 'block';
         wrapper.style.visibility = 'visible';
         wrapper.style.left = '0px';
@@ -385,9 +384,30 @@ function showToast(message, type) {
             console.error('Receipt generation failed:', err);
             showToast('Failed to download receipt.', 'error');
         } finally {
-            wrapper.style.display = 'none';
+        wrapper.style.display = 'none';
             wrapper.style.visibility = 'hidden';
         }
+    }
+
+    // Helper for ImgBB Upload
+    async function uploadToImgBB(file) {
+        if (!file) return null;
+        var uploadData = new FormData();
+        uploadData.append('image', file);
+        
+        try {
+            var response = await fetch('https://api.imgbb.com/1/upload?key=d9db420380b947929a48075006b9f7e4', {
+                method: 'POST',
+                body: uploadData
+            });
+            var result = await response.json();
+            if (result.success) {
+                return result.data.url;
+            }
+        } catch (e) {
+            console.error('ImgBB upload error:', e);
+        }
+        return null;
     }
 
     // 4. Form Submission
@@ -414,10 +434,20 @@ function showToast(message, type) {
         try {
             var formData = new FormData(form);
             
-            // Web3Forms Free Tier blocks file uploads. 
-            // We remove the files from the payload since the user will send them via WhatsApp instead.
+            submitBtn.innerHTML = '<span class="btn-spinner"></span> Uploading Documents...';
+            
+            // Upload to ImgBB
+            var aadhaarFile = document.getElementById('aadhaar').files[0];
+            var schoolIdFile = document.getElementById('schoolId').files[0];
+            
+            var aadhaarUrl = await uploadToImgBB(aadhaarFile);
+            var schoolIdUrl = await uploadToImgBB(schoolIdFile);
+            
+            // Web3Forms Free Tier limits. We remove the files from the payload since we have URLs now.
             formData.delete('aadhaar');
             formData.delete('schoolId');
+
+            submitBtn.innerHTML = '<span class="btn-spinner"></span> Finalizing Registration...';
 
             var response = await fetch('https://api.web3forms.com/submit', {
                 method: 'POST',
@@ -436,8 +466,16 @@ function showToast(message, type) {
                     "Phone: " + document.getElementById('phone').value + "\n" +
                     "Team Name: " + (document.getElementById('teamName') ? document.getElementById('teamName').value : 'N/A') + "\n" +
                     "Level: " + document.getElementById('level').value + "\n" +
-                    "Transaction ID: " + document.getElementById('transactionId').value + "\n\n" +
-                    "*(Please find attached my downloaded receipt, along with my Aadhaar/School ID proofs)*";
+                    "Transaction ID: " + document.getElementById('transactionId').value + "\n\n";
+
+                if (aadhaarUrl) {
+                    waMessage += "Aadhaar Card: " + aadhaarUrl + "\n";
+                }
+                if (schoolIdUrl) {
+                    waMessage += "School ID: " + schoolIdUrl + "\n";
+                }
+
+                waMessage += "\n*(Please find attached my downloaded receipt)*";
                 
                 var waUrl = "https://api.whatsapp.com/send?phone=918296398607&text=" + encodeURIComponent(waMessage);
 
