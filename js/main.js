@@ -22,13 +22,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Scroll Triggers for Cards
-    inView(".editorial-block", ({ target }) => {
-        animate(target, { opacity: [0, 1], y: [50, 0] }, { duration: 0.8, ease: [0.22, 1, 0.36, 1] });
+    inView(".editorial-block", (element) => {
+        animate(element, { opacity: [0, 1], y: [50, 0] }, { duration: 0.8, ease: [0.22, 1, 0.36, 1] });
     }, { margin: "-100px" });
 
     // Scroll Triggers for general sections
-    inView("section .title", ({ target }) => {
-        animate(target, { opacity: [0, 1], x: [-30, 0] }, { duration: 0.8, ease: "easeOut" });
+    inView("section .title", (element) => {
+        animate(element, { opacity: [0, 1], x: [-30, 0] }, { duration: 0.8, ease: "easeOut" });
     }, { margin: "-50px" });
 });
 
