@@ -262,7 +262,6 @@ function showToast(message, type) {
                 } else {
                     status.innerHTML = '<span class="warning">❌ Registration blocked: Could not read date of birth. Please upload a clear Aadhaar image.</span>';
                     document.getElementById('payBtn').disabled = true;
-                    document.getElementById('submitBtn').disabled = true;
                 }
             } catch (err) {
                 clearTimeout(timeoutId);
@@ -271,14 +270,8 @@ function showToast(message, type) {
                 document.getElementById('payBtn').disabled = true;
                 document.getElementById('submitBtn').disabled = true;
             }
-        } catch (err) {
-            clearTimeout(timeoutId);
-            console.warn('Aadhaar OCR error:', err);
-            status.innerHTML = '<span class="warning">❌ Registration blocked: Auto-verification failed. Please upload a clearer Aadhaar image.</span>';
-            document.getElementById('payBtn').disabled = true;
-            document.getElementById('submitBtn').disabled = true;
-        }
-    });
+        });
+    };
 })();
 
 
