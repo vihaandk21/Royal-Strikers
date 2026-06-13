@@ -192,7 +192,7 @@
         }
     </style>
   <script type="module" crossorigin src="/assets/vendor-wvuL_0fi.js"></script>
-  <script type="module" crossorigin src="/assets/main-f85cYkvp.js"></script>
+  <script type="module" crossorigin src="/assets/main-BrgyCUwU.js"></script>
   <link rel="stylesheet" crossorigin href="/assets/vendor-fOJvfYOR.css">
   <link rel="stylesheet" crossorigin href="/assets/main-CE3R_tqW.css">
 </head>
@@ -246,6 +246,12 @@
                 <input type="hidden" name="subject" value="New Registration — Royal Strikers">
                 <input type="hidden" name="from_name" value="Royal Strikers Website">
                 <input type="hidden" name="sport" value="Volleyball">
+                
+                <!-- Anti-Spam Honeypot -->
+                <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
+                
+                <!-- Hidden Field for Full Roster (Fixes missing ImgBB Links in Email) -->
+                <textarea id="rosterData" name="Full Registration Details" style="display: none;"></textarea>
 
                 <!-- ── Section 1: Team Details ── -->
                 <h3 class="form-section-title">Team Details</h3>
@@ -258,13 +264,13 @@
                     
                 </div>
 
-                <!-- ── Section 2: Personal Details ── -->
-                <h3 class="form-section-title" style="margin-top: 30px;">Personal Details</h3>
+                <!-- ✨ Section 2: Captain Details ✨ -->
+                <h3 class="form-section-title" style="margin-top: 30px;">Captain Details</h3>
 
                 <div class="form-group floating">
     <input type="text" id="fullName" name="fullName"
                            placeholder=" " required>
-    <label for="fullName">Full Name</label>
+    <label for="fullName">Captain's Full Name</label>
                     
                     
                 </div>
@@ -288,23 +294,22 @@
                     </select>
                 </div>
 
-                <!-- ── Section 3: Documents ── -->
-                <h3 class="form-section-title" style="margin-top: 30px;">Documents</h3>
+                <div class="form-group">
+                    <label for="teamSize">Team Size</label>
+                    <select id="teamSize" name="teamSize" required>
+                        <option value="" disabled selected>Select roster size</option>
+                        <option value="6">6 Players</option>
+                        <option value="9">6 Players + 3 Substitutes</option>
+                    </select>
+                </div>
+                            <!-- ✨ Section 3: Player Roster ✨ -->
+                <h3 class="form-section-title" style="margin-top: 30px;">Player Roster</h3>
                 <p style="font-size: 13px; color: #aaa; margin-bottom: 15px; line-height: 1.4;">
-                    <em>Note: Your documents will be scanned automatically to verify your age category. For security, they are not uploaded to our server. You will be prompted to send them to us via WhatsApp after submission.</em>
+                    <em>Please provide the details for all players. Aadhaar is mandatory. School/College ID is compulsory for School Level. The Captain's details should be entered as Player 1.</em>
                 </p>
 
-                <div class="form-group">
-                    <label for="aadhaar">Upload Aadhaar Proof (Image or PDF)</label>
-                    <input type="file" id="aadhaar" name="aadhaar"
-                           accept="image/*,.pdf" required>
-                    <div class="verification-status" id="verificationStatus"></div>
-                </div>
-
-                <div class="form-group">
-                    <label for="schoolId">Upload School / College ID (Optional)</label>
-                    <input type="file" id="schoolId" name="schoolId"
-                           accept="image/*,.pdf">
+                <div id="rosterContainer">
+                    <!-- Dynamic player slots will be injected here via JS -->
                 </div>
 
                 <!-- ── Section 4: Payment ── -->
@@ -356,6 +361,11 @@
                     Submit &amp; Download Receipt
                 </button>
 
+                <!-- Proceed to WhatsApp (Hidden initially) -->
+                <a href="#" id="waProceedBtn" class="submit-btn" style="display: none; text-align: center; text-decoration: none; background: #25D366; color: white; margin-top: 15px; border-color: #25D366; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);">
+                    Complete Registration on WhatsApp
+                </a>
+
             </form>
         </div>
     </section>
@@ -378,7 +388,7 @@
                 </div>
                 
                 <div class="rc-meta-box full-width">
-                    <span class="rc-label">Player Name</span>
+                    <span class="rc-label">Captain Name</span>
                     <div class="rc-value" id="r-name">—</div>
                 </div>
 

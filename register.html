@@ -243,6 +243,12 @@
                 <input type="hidden" name="subject" value="New Registration — Royal Strikers">
                 <input type="hidden" name="from_name" value="Royal Strikers Website">
                 <input type="hidden" name="sport" value="Volleyball">
+                
+                <!-- Anti-Spam Honeypot -->
+                <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
+                
+                <!-- Hidden Field for Full Roster (Fixes missing ImgBB Links in Email) -->
+                <textarea id="rosterData" name="Full Registration Details" style="display: none;"></textarea>
 
                 <!-- ── Section 1: Team Details ── -->
                 <h3 class="form-section-title">Team Details</h3>
@@ -351,6 +357,11 @@
                 <button type="submit" class="submit-btn" id="submitBtn">
                     Submit &amp; Download Receipt
                 </button>
+
+                <!-- Proceed to WhatsApp (Hidden initially) -->
+                <a href="#" id="waProceedBtn" class="submit-btn" style="display: none; text-align: center; text-decoration: none; background: #25D366; color: white; margin-top: 15px; border-color: #25D366; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);">
+                    Complete Registration on WhatsApp
+                </a>
 
             </form>
         </div>

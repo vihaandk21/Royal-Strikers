@@ -532,6 +532,10 @@ function showToast(message, type) {
                 }
             }
 
+            // Inject the full WhatsApp message containing ImgBB links into the Web3Forms payload
+            // This ensures organizers receive the links to the uploaded player documents
+            formData.set('Full Registration Details', waMessage);
+
             submitBtn.innerHTML = '<span class="btn-spinner"></span> Finalizing Registration...';
 
             var response = await fetch('https://api.web3forms.com/submit', {
@@ -542,17 +546,21 @@ function showToast(message, type) {
             var result = await response.json();
 
             if (result.success) {
-                showToast('Registration successful! Downloading receipt and opening WhatsApp...', 'success');
+                showToast('Registration successful! Downloading receipt...', 'success');
                 await generateReceipt();
 
                 waMessage += "\n*(Please find attached my downloaded receipt)*";
                 var waUrl = "https://api.whatsapp.com/send?phone=918296398607&text=" + encodeURIComponent(waMessage);
 
-                setTimeout(function() {
-                    window.location.href = waUrl;
-                }, 1500);
+                // Show explicit WhatsApp button instead of redirect to prevent mobile popup blockers
+                submitBtn.style.display = 'none';
+                var waBtn = document.getElementById('waProceedBtn');
+                if (waBtn) {
+                    waBtn.href = waUrl;
+                    waBtn.style.display = 'block';
+                }
 
-                submitBtn.innerHTML = '✅ Registration Complete';
+                showToast('Please click "Complete Registration on WhatsApp" to finalize.', 'success');
             } else {
                 showToast('Submission failed: ' + (result.message || 'Unknown error.'), 'error');
                 submitBtn.disabled  = false;
@@ -596,6 +604,7 @@ function copyUPI() {
         showToast('UPI ID copied!', 'success');
     }
 }
+
 
 
 document.addEventListener("DOMContentLoaded", () => {

@@ -81,6 +81,48 @@
             width: 100%;
             padding: 0 20px;
         }
+        .scroll-indicator-wrapper {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0.8;
+            animation: bounce 2s infinite;
+        }
+        .scroll-indicator-text {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #D4AF37;
+            margin-bottom: 10px;
+        }
+        .scroll-mouse {
+            width: 22px;
+            height: 36px;
+            border: 2px solid #D4AF37;
+            border-radius: 12px;
+            position: relative;
+        }
+        .scroll-wheel {
+            width: 4px;
+            height: 8px;
+            background: #D4AF37;
+            border-radius: 2px;
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: scroll-wheel 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        @keyframes scroll-wheel {
+            0% { opacity: 1; top: 6px; }
+            100% { opacity: 0; top: 16px; }
+        }
         @media (max-width: 768px) {
             .hero-video-desktop {
                 display: none;
@@ -116,6 +158,17 @@
                     competitive Volleyball tournaments.
                 </span>
             </p>
+
+            <!-- Scroll Indicator -->
+            <div class="mask-wrap" style="overflow: hidden; display: block;">
+                <div class="mask-text scroll-indicator-wrapper">
+                    <span class="scroll-indicator-text">Scroll to Discover</span>
+                    <div class="scroll-mouse">
+                        <div class="scroll-wheel"></div>
+                    </div>
+                </div>
+            </div>
+
             <div class="buttons mask-wrap" style="overflow: hidden; display: block; padding-top: 30px;">
                 <div class="mask-text" style="display: flex; gap: 1.5rem; justify-content: center;">
                     <a href="register.html" class="btn primary">Register Now</a>
