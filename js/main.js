@@ -110,11 +110,6 @@ function showToast(message, type) {
 //    Falls back gracefully if OCR fails, times out, or file is a PDF.
 // ────────────────────────────────────────────────────────────────
 (function initAadhaarVerification() {
-    var aadhaarInput = document.getElementById('aadhaar');
-    var status       = document.getElementById('verificationStatus');
-
-    // Only run on register page
-    if (!aadhaarInput || !status) return;
 
     // Age logic relies on direct DOB cutoff Date comparison.
 
