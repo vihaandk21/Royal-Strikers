@@ -208,58 +208,66 @@ function showToast(message, type) {
         return result.data.text;
     }
 
-    aadhaarInput.addEventListener('change', async function (e) {
-        var file = e.target.files[0];
-        if (!file) { status.innerHTML = ''; return; }
+    window.attachAadhaarOCR = function(aadhaarInput, status) {
+        aadhaarInput.addEventListener('change', async function (e) {
+            var file = e.target.files[0];
+            if (!file) { status.innerHTML = ''; return; }
 
-        // PDFs can't be OCR'd client-side — skip gracefully
-        if (!file.type.startsWith('image/')) {
-            status.innerHTML = '<span class="warning">📄 PDF uploaded — we will verify your document manually via WhatsApp.</span>';
-            return;
-        }
+            // PDFs can't be OCR'd client-side — skip gracefully
+            if (!file.type.startsWith('image/')) {
+                status.innerHTML = '<span class="warning">📄 PDF uploaded — we will verify your document manually via WhatsApp.</span>';
+                return;
+            }
 
-        status.innerHTML = '<span class="scanning"><span class="spinner"></span> Scanning Aadhaar for age verification...</span>';
+            status.innerHTML = '<span class="scanning"><span class="spinner"></span> Scanning Aadhaar for age verification...</span>';
 
-        // 30-second timeout so it doesn't hang forever
-        var timeoutId;
-        var timeoutPromise = new Promise(function (_, reject) {
-            timeoutId = setTimeout(function () {
-                reject(new Error('OCR timed out'));
-            }, 30000);
-        });
+            // 30-second timeout so it doesn't hang forever
+            var timeoutId;
+            var timeoutPromise = new Promise(function (_, reject) {
+                timeoutId = setTimeout(function () {
+                    reject(new Error('OCR timed out'));
+                }, 30000);
+            });
 
-        try {
-            var enhancedImageUrl = await preprocessImageForOCR(file);
+            try {
+                var enhancedImageUrl = await preprocessImageForOCR(file);
 
-            var ocrPromise = loadAndRunOCR(enhancedImageUrl);
-            var text = await Promise.race([ocrPromise, timeoutPromise]);
-            clearTimeout(timeoutId);
+                var ocrPromise = loadAndRunOCR(enhancedImageUrl);
+                var text = await Promise.race([ocrPromise, timeoutPromise]);
+                clearTimeout(timeoutId);
 
-            console.log("OCR Raw Output:\n", text); // Helpful for debugging
+                console.log("OCR Raw Output:\n", text); // Helpful for debugging
 
-            var dob = extractDOB(text);
+                var dob = extractDOB(text);
 
-            if (dob) {
-                var cutoffDate = new Date(2008, 6, 8); // July 8, 2008
-                var dobString = dob.toLocaleDateString();
+                if (dob) {
+                    var cutoffDate = new Date(2008, 6, 8); // July 8, 2008
+                    var dobString = dob.toLocaleDateString();
 
-                if (dob < cutoffDate) {
-                    status.innerHTML = '<span class="warning">❌ Registration blocked: DOB is ' + dobString + ' (Before cutoff: July 8, 2008). Only eligible players are allowed.</span>';
-                    document.getElementById('payBtn').disabled = true;
-                    document.getElementById('submitBtn').disabled = true;
-                } else if (dob >= cutoffDate) {
-                    status.innerHTML = '<span class="verified">✅ DOB verified: ' + dobString + '. You may proceed.</span>';
-                    if (document.getElementById('level').value) {
-                        document.getElementById('payBtn').disabled = false;
-                        document.getElementById('submitBtn').disabled = false;
+                    if (dob < cutoffDate) {
+                        status.innerHTML = '<span class="warning">❌ Registration blocked: DOB is ' + dobString + ' (Before cutoff: July 8, 2008). Only eligible players are allowed.</span>';
+                        document.getElementById('payBtn').disabled = true;
+                        document.getElementById('submitBtn').disabled = true;
+                    } else if (dob >= cutoffDate) {
+                        status.innerHTML = '<span class="verified">✅ DOB verified: ' + dobString + '. You may proceed.</span>';
+                        if (document.getElementById('level').value) {
+                            document.getElementById('payBtn').disabled = false;
+                            document.getElementById('submitBtn').disabled = false;
+                        }
+                    } else {
+                        status.innerHTML = '<span class="warning">❌ Registration blocked: Could not determine valid age. Please upload a clear Aadhaar image.</span>';
+                        document.getElementById('payBtn').disabled = true;
+                        document.getElementById('submitBtn').disabled = true;
                     }
                 } else {
-                    status.innerHTML = '<span class="warning">❌ Registration blocked: Could not determine valid age. Please upload a clear Aadhaar image.</span>';
+                    status.innerHTML = '<span class="warning">❌ Registration blocked: Could not read date of birth. Please upload a clear Aadhaar image.</span>';
                     document.getElementById('payBtn').disabled = true;
                     document.getElementById('submitBtn').disabled = true;
                 }
-            } else {
-                status.innerHTML = '<span class="warning">❌ Registration blocked: Could not read date of birth. Please upload a clear Aadhaar image.</span>';
+            } catch (err) {
+                clearTimeout(timeoutId);
+                console.warn('Aadhaar OCR error:', err);
+                status.innerHTML = '<span class="warning">❌ Registration blocked: Auto-verification failed. Please upload a clearer Aadhaar image.</span>';
                 document.getElementById('payBtn').disabled = true;
                 document.getElementById('submitBtn').disabled = true;
             }
@@ -287,10 +295,66 @@ function showToast(message, type) {
     var payBtn    = document.getElementById('payBtn');
     var upiManual = document.getElementById('upiManual');
     var submitBtn = document.getElementById('submitBtn');
+    var teamSizeSel = document.getElementById('teamSize');
+    var rosterContainer = document.getElementById('rosterContainer');
 
     if (!form) return;
 
     var currentAmount = 0;
+
+    // Dynamic Roster Rendering
+    function renderRoster() {
+        if (!rosterContainer || !teamSizeSel) return;
+        var size = parseInt(teamSizeSel.value, 10);
+        if (!size) return;
+
+        var html = '';
+        var levelSel = document.getElementById('level');
+        var isSchool = levelSel && levelSel.value === 'School Level';
+
+        for (var i = 1; i <= size; i++) {
+            var title = (i === 1) ? 'Player 1 (Captain)' : 'Player ' + i;
+            if (size === 9 && i > 7) {
+                title += ' (Optional Sub)';
+            }
+            
+            var reqStr = (size === 9 && i > 7) ? '' : 'required';
+            var idReqStr = (isSchool && reqStr) ? 'required' : '';
+            var optLabel = idReqStr ? '' : ' (Optional)';
+
+            html += '<div class="player-slot" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,223,115,0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px;">' +
+                        '<h4 style="color: #FFDF73; margin-bottom: 10px;">' + title + '</h4>' +
+                        '<div class="form-group floating">' +
+                            '<input type="text" id="playerName_' + i + '" name="playerName_' + i + '" placeholder=" " ' + reqStr + '>' +
+                            '<label for="playerName_' + i + '">Full Name</label>' +
+                        '</div>' +
+                        '<div class="form-group">' +
+                            '<label for="aadhaar_' + i + '">Upload Aadhaar Proof (Image/PDF)</label>' +
+                            '<input type="file" id="aadhaar_' + i + '" name="aadhaar_' + i + '" accept="image/*,.pdf" ' + reqStr + '>' +
+                            '<div class="verification-status" id="status_' + i + '"></div>' +
+                        '</div>' +
+                        '<div class="form-group">' +
+                            '<label for="schoolId_' + i + '">Upload School/College ID' + optLabel + '</label>' +
+                            '<input type="file" id="schoolId_' + i + '" name="schoolId_' + i + '" accept="image/*,.pdf" ' + idReqStr + '>' +
+                        '</div>' +
+                    '</div>';
+        }
+        rosterContainer.innerHTML = html;
+
+        // Attach OCR to dynamically generated Aadhaar inputs
+        for (var j = 1; j <= size; j++) {
+            var aadhaarInput = document.getElementById('aadhaar_' + j);
+            var statusElement = document.getElementById('status_' + j);
+            if (aadhaarInput && statusElement && window.attachAadhaarOCR) {
+                window.attachAadhaarOCR(aadhaarInput, statusElement);
+            }
+        }
+    }
+
+    if (teamSizeSel) {
+        teamSizeSel.addEventListener('change', renderRoster);
+    }
+
 
     // 1. Level Selection Logic
     levelSel.addEventListener('change', function () {
@@ -306,6 +370,7 @@ function showToast(message, type) {
         }
         amtField.value = currentAmount;
         payBtn.disabled = false;
+        renderRoster(); // re-render roster to update required fields
     });
 
     // 2. Pay via UPI Button
@@ -433,19 +498,46 @@ function showToast(message, type) {
 
         try {
             var formData = new FormData(form);
+            var size = parseInt(teamSizeSel.value, 10);
             
             submitBtn.innerHTML = '<span class="btn-spinner"></span> Uploading Documents...';
             
-            // Upload to ImgBB
-            var aadhaarFile = document.getElementById('aadhaar').files[0];
-            var schoolIdFile = document.getElementById('schoolId').files[0];
-            
-            var aadhaarUrl = await uploadToImgBB(aadhaarFile);
-            var schoolIdUrl = await uploadToImgBB(schoolIdFile);
-            
-            // Web3Forms Free Tier limits. We remove the files from the payload since we have URLs now.
-            formData.delete('aadhaar');
-            formData.delete('schoolId');
+            var waMessage = "Hello Royal Strikers! I have registered my team for the tournament.\n\n" +
+                "Captain Name: " + document.getElementById('fullName').value + "\n" +
+                "Phone: " + document.getElementById('phone').value + "\n" +
+                "Team Name: " + (document.getElementById('teamName') ? document.getElementById('teamName').value : 'N/A') + "\n" +
+                "Level: " + document.getElementById('level').value + "\n" +
+                "Team Size: " + (size === 6 ? '6 Players' : '6 Players + 3 Subs') + "\n" +
+                "Transaction ID: " + document.getElementById('transactionId').value + "\n\n" +
+                "Roster:\n";
+
+            // Upload all documents to ImgBB and append to waMessage
+            for (var i = 1; i <= size; i++) {
+                var pNameInput = document.getElementById('playerName_' + i);
+                if (!pNameInput || !pNameInput.value) continue; // Skip unfilled optional subs
+
+                var pName = pNameInput.value;
+                waMessage += "*" + i + ". " + pName + "*\n";
+
+                var aadhaarFile = document.getElementById('aadhaar_' + i).files[0];
+                var schoolIdFile = document.getElementById('schoolId_' + i).files[0];
+                
+                if (aadhaarFile) {
+                    var aUrl = await uploadToImgBB(aadhaarFile);
+                    if (aUrl) waMessage += "   Aadhaar: " + aUrl + "\n";
+                }
+                if (schoolIdFile) {
+                    var sUrl = await uploadToImgBB(schoolIdFile);
+                    if (sUrl) waMessage += "   School ID: " + sUrl + "\n";
+                }
+            }
+
+            // Remove all files from formData so they don't bloat Web3Forms email limits
+            for (var [key, value] of Array.from(formData.entries())) {
+                if (value instanceof File) {
+                    formData.delete(key);
+                }
+            }
 
             submitBtn.innerHTML = '<span class="btn-spinner"></span> Finalizing Registration...';
 
@@ -460,32 +552,13 @@ function showToast(message, type) {
                 showToast('Registration successful! Downloading receipt and opening WhatsApp...', 'success');
                 await generateReceipt();
 
-                // Prepare WhatsApp Message
-                var waMessage = "Hello Royal Strikers! I have registered for the tournament.\n\n" +
-                    "Name: " + document.getElementById('fullName').value + "\n" +
-                    "Phone: " + document.getElementById('phone').value + "\n" +
-                    "Team Name: " + (document.getElementById('teamName') ? document.getElementById('teamName').value : 'N/A') + "\n" +
-                    "Level: " + document.getElementById('level').value + "\n" +
-                    "Transaction ID: " + document.getElementById('transactionId').value + "\n\n";
-
-                if (aadhaarUrl) {
-                    waMessage += "Aadhaar Card: " + aadhaarUrl + "\n";
-                }
-                if (schoolIdUrl) {
-                    waMessage += "School ID: " + schoolIdUrl + "\n";
-                }
-
                 waMessage += "\n*(Please find attached my downloaded receipt)*";
-                
                 var waUrl = "https://api.whatsapp.com/send?phone=918296398607&text=" + encodeURIComponent(waMessage);
 
-                // Navigate to WhatsApp after a short delay so the receipt can download
-                // Using window.location.href bypasses popup blockers because it's a top-level navigation
                 setTimeout(function() {
                     window.location.href = waUrl;
                 }, 1500);
 
-                // Keep button disabled to prevent double submission
                 submitBtn.innerHTML = '✅ Registration Complete';
             } else {
                 showToast('Submission failed: ' + (result.message || 'Unknown error.'), 'error');
