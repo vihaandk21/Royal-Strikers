@@ -582,16 +582,19 @@ document.addEventListener("DOMContentLoaded", () => {
             duration: 2.0, 
             ease: "circOut",
             onComplete: () => {
-                // Fade out preloader
-                animate(preloaderWrap, { opacity: 0 }, { duration: 0.8, ease: "easeInOut" }).then(() => {
-                    preloaderWrap.style.display = 'none';
-                    
-                    // Trigger Masked Text Reveals
-                    const maskTexts = document.querySelectorAll('.mask-text');
-                    if(maskTexts.length > 0) {
-                        animate(maskTexts, { y: ["100%", "0%"] }, { duration: 1.2, ease: [0.76, 0, 0.24, 1], delay: stagger(0.15) });
-                    }
-                });
+                // Hold for 1 second before fading out
+                setTimeout(() => {
+                    // Fade out preloader
+                    animate(preloaderWrap, { opacity: 0 }, { duration: 0.8, ease: "easeInOut" }).then(() => {
+                        preloaderWrap.style.display = 'none';
+                        
+                        // Trigger Masked Text Reveals
+                        const maskTexts = document.querySelectorAll('.mask-text');
+                        if(maskTexts.length > 0) {
+                            animate(maskTexts, { y: ["100%", "0%"] }, { duration: 1.2, ease: [0.76, 0, 0.24, 1], delay: stagger(0.15) });
+                        }
+                    });
+                }, 1000);
             }
         });
     }
