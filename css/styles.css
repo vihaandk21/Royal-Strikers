@@ -25,7 +25,7 @@
     --bg-dark: #050505;
     --glass-bg: rgba(255, 255, 255, 0.03);
     --glass-border: 1px solid rgba(212, 175, 55, 0.15);
-    --font-display: 'Outfit', sans-serif;
+    --font-display: 'Cinzel', serif;
     --font-body: 'Plus Jakarta Sans', sans-serif;
 }
 
@@ -45,7 +45,7 @@ body::after {
     position: fixed;
     top: 0; left: 0; width: 100vw; height: 100vh;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    opacity: 0.03;
+    opacity: 0.05;
     pointer-events: none;
     z-index: 9999;
 }
@@ -1145,3 +1145,79 @@ footer {
     .editorial-block { margin-top: 5rem !important; }
     .editorial-block h3 { font-size: 2.5rem; }
 }
+
+/* Custom Cursor & Spotlight */
+@media (pointer: fine) {
+    body {
+        cursor: none;
+    }
+    a, button, input, select, textarea, .card {
+        cursor: none;
+    }
+}
+
+.custom-cursor {
+    position: fixed;
+    top: 0; left: 0;
+    width: 20px; height: 20px;
+    background: var(--gold-primary);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 100000;
+    mix-blend-mode: exclusion;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1), height 0.3s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.3s ease;
+    will-change: transform, width, height;
+}
+
+.custom-cursor.hovering {
+    width: 60px;
+    height: 60px;
+    background: rgba(212, 175, 55, 0.2);
+    border: 1px solid var(--gold-primary);
+    backdrop-filter: blur(4px);
+    mix-blend-mode: normal;
+}
+
+/* Spotlight Effect */
+.card {
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: var(--y, 50%);
+    left: var(--x, 50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle closest-side, rgba(212, 175, 55, 0.1), transparent);
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.card:hover::before {
+    opacity: 1;
+}
+
+.card > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Enhancing h1, h2, h3 for Cinzel */
+h1, h2, h3, .royal-title {
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.hero h1 {
+    letter-spacing: 0.1em;
+}
+
+/* Noise overlay bump */

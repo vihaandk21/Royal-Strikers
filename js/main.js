@@ -1,4 +1,6 @@
 import { animate, stagger, inView, scroll } from "framer-motion/dom";
+import Lenis from "lenis";
+import "lenis/dist/lenis.css";
 
 // --- CINEMATIC ANIMATIONS (>₹10L AESTHETIC) ---
 document.addEventListener("DOMContentLoaded", () => {
@@ -496,4 +498,49 @@ document.addEventListener("DOMContentLoaded", () => {
     if (copyBtn) {
         copyBtn.addEventListener("click", copyUPI);
     }
+});
+
+
+// --- HYPER-LUXURY INTERACTIONS (>₹10L AESTHETIC) ---
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. Smooth Scroll (Lenis) - Only for desktop/non-touch to preserve mobile performance
+    const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
+    
+    if (!isTouchDevice) {
+        const lenis = new Lenis({
+            autoRaf: true,
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            smoothWheel: true,
+            wheelMultiplier: 1,
+        });
+    }
+
+    // 2. Custom Magnetic Cursor
+    const cursor = document.getElementById('customCursor');
+    if (cursor && !isTouchDevice) {
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // Magnetic hover effects
+        const interactiveElements = document.querySelectorAll('a, button, input, select, textarea, .card');
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
+        });
+    }
+
+    // 3. Spotlight Cards
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty('--x', x + 'px');
+            card.style.setProperty('--y', y + 'px');
+        });
+    });
 });
