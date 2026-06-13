@@ -662,3 +662,29 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 });
+
+// =================================================================
+// 6. SCROLL REVEAL ANIMATIONS (Intersection Observer)
+// =================================================================
+(function initScrollReveals() {
+    const reveals = document.querySelectorAll(".reveal");
+    if (reveals.length === 0) return;
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("active");
+                // Optional: Stop observing once revealed
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        rootMargin: "0px 0px -50px 0px",
+        threshold: 0.1
+    });
+
+    reveals.forEach(reveal => {
+        observer.observe(reveal);
+    });
+})();
+
