@@ -321,6 +321,10 @@ function showToast(message, type) {
                             '<input type="text" id="playerName_' + i + '" name="playerName_' + i + '" placeholder=" " ' + reqStr + '>' +
                             '<label for="playerName_' + i + '">Full Name</label>' +
                         '</div>' +
+                        '<div class="form-group floating">' +
+                            '<input type="tel" id="playerPhone_' + i + '" name="playerPhone_' + i + '" placeholder=" " pattern="[0-9]{10}" maxlength="10" title="10-digit phone number" ' + reqStr + '>' +
+                            '<label for="playerPhone_' + i + '">Phone Number</label>' +
+                        '</div>' +
                         '<div class="form-group">' +
                             '<label for="aadhaar_' + i + '">Upload Aadhaar Proof (Image/PDF)</label>' +
                             '<input type="file" id="aadhaar_' + i + '" name="aadhaar_' + i + '" accept="image/*,.pdf" ' + reqStr + '>' +
@@ -510,7 +514,8 @@ function showToast(message, type) {
                 if (!pNameInput || !pNameInput.value) continue; // Skip unfilled optional subs
 
                 var pName = pNameInput.value;
-                waMessage += "*" + i + ". " + pName + "*\n";
+                var pPhone = document.getElementById('playerPhone_' + i) ? document.getElementById('playerPhone_' + i).value : 'N/A';
+                waMessage += "*" + i + ". " + pName + " (" + pPhone + ")*\n";
 
                 var aadhaarFile = document.getElementById('aadhaar_' + i).files[0];
                 var schoolIdFile = document.getElementById('schoolId_' + i).files[0];
