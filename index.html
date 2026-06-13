@@ -22,7 +22,7 @@
 
     <!-- Cinematic Preloader -->
     <div id="preloader" style="position: fixed; inset: 0; background: #050505; z-index: 99999; display: flex; align-items: center; justify-content: center;">
-        <h1 id="preloader-text" style="font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 3rem; color: #D4AF37; letter-spacing: 0.1em; opacity: 0; transform: translateY(20px);">ROYAL STRIKERS</h1>
+        <h1 id="preloader-text" style="font-family: 'Cinzel', serif; font-weight: 800; font-size: 5rem; color: #D4AF37; opacity: 1; transform: translateY(0);"><span id="preloader-counter">0</span>%</h1>
     </div>
 
 
@@ -46,15 +46,29 @@
     </nav>
 
     <!-- ===== HERO SECTION ===== -->
-    <section class="hero">
-        <h1>ROYAL <span>STRIKERS</span></h1>
-        <p>
-            Where champions rise. Join the most exciting community for
-            competitive Volleyball tournaments.
+        <section class="hero" style="position: relative; overflow: hidden;">
+        <!-- Background Video -->
+        <video autoplay muted loop playsinline class="hero-video" style="position: absolute; top: 50%; left: 50%; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -2; transform: translate(-50%, -50%); object-fit: cover; opacity: 0.7;">
+            <source src="images/main/lv_0_20260613171113.mp4" type="video/mp4">
+        </video>
+        <!-- Overlay Gradient -->
+        <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(5,5,5,0.3) 0%, rgba(5,5,5,1) 100%); z-index: -1;"></div>
+
+        <h1 style="display: flex; flex-direction: column; align-items: center; gap: 0;">
+            <span class="mask-wrap" style="overflow: hidden; display: block;"><span class="mask-text" style="display: block;">ROYAL</span></span>
+            <span class="mask-wrap" style="overflow: hidden; display: block;"><span class="mask-text" style="display: block; color: var(--gold-primary);">STRIKERS</span></span>
+        </h1>
+        <p class="mask-wrap" style="overflow: hidden; display: block;">
+            <span class="mask-text" style="display: block;">
+                Where champions rise. Join the most exciting community for
+                competitive Volleyball tournaments.
+            </span>
         </p>
-        <div class="buttons">
-            <a href="register.html" class="btn primary">Register Now</a>
-            <a href="#sports" class="btn secondary">Explore</a>
+        <div class="buttons mask-wrap" style="overflow: hidden; display: block; padding-top: 20px;">
+            <div class="mask-text" style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="register.html" class="btn primary">Register Now</a>
+                <a href="#sports" class="btn secondary">Explore</a>
+            </div>
         </div>
     </section>
 

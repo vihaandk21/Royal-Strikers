@@ -1287,3 +1287,19 @@ a:active, button:active, .btn:active {
     color: var(--gold-primary);
     letter-spacing: 0.05em;
 }
+
+
+/* Custom Luxury Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(212, 175, 55, 0.3);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(212, 175, 55, 0.6);
+}

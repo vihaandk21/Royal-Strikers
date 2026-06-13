@@ -569,4 +569,56 @@ document.addEventListener("DOMContentLoaded", () => {
             card.style.setProperty('--y', y + 'px');
         });
     });
+
+    // --- PHASE 3 LUXURY LOGIC ---
+    
+    // 1. Preloader Counter & Masked Text Reveals
+    const counterEl = document.getElementById('preloader-counter');
+    const preloaderWrap = document.getElementById('preloader');
+    
+    if (counterEl && preloaderWrap) {
+        // Prevent default animation
+        animate(0, 100, {
+            duration: 2.5,
+            ease: "circOut",
+            onUpdate: (latest) => {
+                counterEl.innerHTML = Math.round(latest);
+            },
+            onComplete: () => {
+                // Fade out preloader
+                animate(preloaderWrap, { opacity: 0 }, { duration: 0.8, ease: "easeInOut" }).then(() => {
+                    preloaderWrap.style.display = 'none';
+                    
+                    // Trigger Masked Text Reveals
+                    const maskTexts = document.querySelectorAll('.mask-text');
+                    if(maskTexts.length > 0) {
+                        animate(maskTexts, { y: ["100%", "0%"] }, { duration: 1.2, ease: [0.76, 0, 0.24, 1], delay: stagger(0.15) });
+                    }
+                });
+            }
+        });
+    }
+
+    // 2. 3D Tilt Gallery Cards
+    const tiltCards = document.querySelectorAll('.gallery-grid img, .sport-card');
+    tiltCards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Calculate rotation based on cursor position (-10 to 10 degrees)
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = ((y - centerY) / centerY) * -10;
+            const rotateY = ((x - centerX) / centerX) * 10;
+            
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+        });
+    });
+
 });
