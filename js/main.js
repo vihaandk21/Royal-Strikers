@@ -592,6 +592,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     animate(preloaderWrap, { opacity: 0 }, { duration: 0.8, ease: "easeInOut" }).then(() => {
                         preloaderWrap.style.display = 'none';
                         
+                        // Force video to play if autoplay failed
+                        if (heroVideo) {
+                            heroVideo.play().catch(err => console.warn("Video play failed:", err));
+                        }
+                        
                         // Trigger Masked Text Reveals
                         const maskTexts = document.querySelectorAll('.mask-text');
                         if(maskTexts.length > 0) {
