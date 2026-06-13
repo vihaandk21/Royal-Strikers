@@ -137,11 +137,7 @@ nav a:hover {
    ───────────────────────────────────────────────────────────────── */
 .hero {
     min-height: 100vh;
-    background:
-        linear-gradient(rgba(0, 0, 0, .65), rgba(0, 0, 0, .75)),
-        url("../images/main/throwball.jpg");
-    background-size: cover;
-    background-position: center;
+    background-color: transparent;
     display: flex;
     flex-direction: column;
     justify-content: center;

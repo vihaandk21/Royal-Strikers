@@ -572,18 +572,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- PHASE 3 LUXURY LOGIC ---
     
-    // 1. Preloader Counter & Masked Text Reveals
-    const counterEl = document.getElementById('preloader-counter');
+    // 1. Preloader Loading Bar & Masked Text Reveals
+    const loadingBar = document.getElementById('preloader-bar');
     const preloaderWrap = document.getElementById('preloader');
     
-    if (counterEl && preloaderWrap) {
-        // Prevent default animation
-        animate(0, 100, {
-            duration: 2.5,
+    if (loadingBar && preloaderWrap) {
+        // Animate loading bar width to 100%
+        animate(loadingBar, { width: ["0%", "100%"] }, { 
+            duration: 2.0, 
             ease: "circOut",
-            onUpdate: (latest) => {
-                counterEl.innerHTML = Math.round(latest);
-            },
             onComplete: () => {
                 // Fade out preloader
                 animate(preloaderWrap, { opacity: 0 }, { duration: 0.8, ease: "easeInOut" }).then(() => {
