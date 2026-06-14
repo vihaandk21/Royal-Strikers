@@ -250,6 +250,16 @@
                 <!-- Hidden Field for Full Roster (Fixes missing ImgBB Links in Email) -->
                 <textarea id="rosterData" name="Full Registration Details" style="display: none;"></textarea>
 
+                <!-- ── Team Category (Topmost) ── -->
+                <div class="form-group">
+                    <label for="teamGender">Team Category</label>
+                    <select id="teamGender" name="teamGender" required>
+                        <option value="" disabled selected>Select team category</option>
+                        <option value="Boys">👦 Boys Team</option>
+                        <option value="Girls">👧 Girls Team</option>
+                    </select>
+                </div>
+
                 <!-- ── Section 1: Team Details ── -->
                 <h3 class="form-section-title">Team Details</h3>
 
@@ -263,15 +273,6 @@
 
                 <!-- ✨ Section 2: Captain Details ✨ -->
                 <h3 class="form-section-title" style="margin-top: 30px;">Captain Details</h3>
-
-                <div class="form-group">
-                    <label for="teamGender">Team Category</label>
-                    <select id="teamGender" name="teamGender" required>
-                        <option value="" disabled selected>Select team category</option>
-                        <option value="Boys">👦 Boys Team</option>
-                        <option value="Girls">👧 Girls Team</option>
-                    </select>
-                </div>
 
                 <div class="form-group floating">
     <input type="text" id="fullName" name="fullName"
