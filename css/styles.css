@@ -71,8 +71,9 @@ nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(5, 5, 5, 0.85);
-    backdrop-filter: blur(12px);
+    background: rgba(5, 5, 5, 0.7);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     border-bottom: 1px solid rgba(212, 175, 55, 0.15);
     z-index: 1000;
 }
@@ -197,10 +198,29 @@ nav a:hover {
     color: #050505;
     box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
     border: 1px solid rgba(255, 223, 115, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.primary::after {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%);
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.4s ease, transform 0.6s ease;
+    pointer-events: none;
+}
+
+.primary:hover::after {
+    opacity: 1;
+    transform: scale(1);
 }
 
 .primary:hover {
-    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6);
+    box-shadow: 0 8px 30px rgba(212, 175, 55, 0.7);
     background: linear-gradient(135deg, #FFF0A8 0%, #D4AF37 50%, #B8860B 100%);
 }
 
@@ -244,12 +264,14 @@ section {
 
 .card {
     background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(0, 0, 0, 0.5) 100%);
-    backdrop-filter: blur(16px);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     border: var(--glass-border);
     padding: 30px;
     border-radius: 16px;
     text-align: center;
-    transition: 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s cubic-bezier(0.25, 1, 0.5, 1), background 0.4s ease;
+    overflow: hidden;
     box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
@@ -996,6 +1018,7 @@ footer {
 /* ─────────────────────────────────────────────────────────────────
    12. SPINNERS & LOADERS
    ───────────────────────────────────────────────────────────────── */
+.custom-cursor {
 .spinner {
     width: 16px;
     height: 16px;
@@ -1160,39 +1183,6 @@ footer {
     body {
         cursor: none;
     }
-    a, button, input, select, textarea, .card {
-        cursor: none;
-    }
-}
-
-.custom-cursor {
-    position: fixed;
-    top: 0; left: 0;
-    width: 20px; height: 20px;
-    background: var(--gold-primary);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 100000;
-    mix-blend-mode: exclusion;
-    transform: translate(-50%, -50%);
-    transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1), height 0.3s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.3s ease;
-    will-change: transform, width, height;
-}
-
-.custom-cursor.hovering {
-    width: 60px;
-    height: 60px;
-    background: rgba(212, 175, 55, 0.2);
-    border: 1px solid var(--gold-primary);
-    backdrop-filter: blur(4px);
-    mix-blend-mode: normal;
-}
-
-/* Spotlight Effect */
-.card {
-    position: relative;
-    overflow: hidden;
-}
 
 .card::before {
     content: '';

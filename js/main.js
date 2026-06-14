@@ -2,33 +2,117 @@ import { animate, stagger, inView, scroll } from "framer-motion/dom";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 
-// --- CINEMATIC ANIMATIONS (>₹10L AESTHETIC) ---
+// --- PREMIUM INTERACTIVITY (UI/UX PRO MAX) ---
 document.addEventListener("DOMContentLoaded", () => {
+    
+    // 1. Initialize Lenis Smooth Scrolling
+    const lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        direction: 'vertical',
+        gestureDirection: 'vertical',
+        smooth: true,
+        mouseMultiplier: 1,
+        smoothTouch: false, // Touch devices use native scroll
+        touchMultiplier: 2,
+        infinite: false,
+    });
+
+    function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    // 2. Magnetic Custom Cursor
+    const cursor = document.getElementById("customCursor");
+    let mouseX = 0, mouseY = 0;
+    let cursorX = 0, cursorY = 0;
+    let isHovering = false;
+
+    // Detect touch device to disable cursor
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    
+    if (cursor && !isTouchDevice) {
+        document.addEventListener("mousemove", (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            if (cursor.style.display === "none" || cursor.style.display === "") {
+                cursor.style.display = "block";
+            }
+        });
+
+        // Easing loop for smooth trailing cursor
+        const animateCursor = () => {
+            // Adjust speed: 0.15 is smooth but responsive
+            cursorX += (mouseX - cursorX) * 0.15;
+            cursorY += (mouseY - cursorY) * 0.15;
+            
+            const scale = isHovering ? 2.5 : 1;
+            cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0) translate(-50%, -50%) scale(${scale})`;
+            
+            requestAnimationFrame(animateCursor);
+        };
+        animateCursor();
+
+        // Magnetic effect on interactive elements
+        const interactiveEls = document.querySelectorAll("a, button, .btn, .editorial-block, input, select, textarea");
+        interactiveEls.forEach(el => {
+            el.addEventListener("mouseenter", () => { isHovering = true; cursor.style.mixBlendMode = "difference"; cursor.style.backgroundColor = "white"; cursor.style.border = "none"; });
+            el.addEventListener("mouseleave", () => { isHovering = false; cursor.style.mixBlendMode = "normal"; cursor.style.backgroundColor = "transparent"; cursor.style.border = "1px solid var(--gold-primary)"; });
+        });
+    }
+
+    // 3. Cinematic Preloader & Hero Reveal
     const preloader = document.getElementById("preloader");
     if (preloader) {
-        // Preloader Sequence
-        animate("#preloader-text", { opacity: [0, 1], y: [20, 0] }, { duration: 0.8, ease: [0.22, 1, 0.36, 1] })
+        // Preloader progress bar fills up
+        animate("#preloader-bar", { width: ["0%", "100%"] }, { duration: 1.5, ease: "easeInOut" })
             .then(() => {
-                return animate("#preloader", { opacity: 0 }, { duration: 0.8, delay: 0.5, ease: "easeInOut" });
+                // Text scales out, progress bar fades
+                animate("#preloader-text", { opacity: 0, scale: 1.1, filter: "blur(4px)" }, { duration: 0.6, ease: "easeIn" });
+                return animate("#preloader", { opacity: 0 }, { duration: 0.8, delay: 0.2, ease: "easeInOut" });
             })
             .then(() => {
                 preloader.style.display = "none";
-                // Trigger Hero animations after preloader finishes
-                animate(".hero h1", { opacity: [0, 1], y: [50, 0] }, { duration: 1, ease: [0.22, 1, 0.36, 1] });
-                animate(".hero p", { opacity: [0, 1], y: [20, 0] }, { duration: 1, delay: 0.2, ease: "easeOut" });
-                animate(".hero .buttons .btn", { opacity: [0, 1], scale: [0.9, 1] }, { duration: 0.8, delay: stagger(0.1, { startDelay: 0.4 }) });
+                
+                // Hero Background Video scales down to normal
+                animate(".hero-video", { scale: [1.1, 1], filter: ["blur(4px)", "blur(0px)"] }, { duration: 1.5, ease: "easeOut" });
+
+                // Staggered Text Reveal for "ROYAL" and "STRIKERS"
+                animate(".hero h1 .mask-text", { y: ["100%", "0%"] }, { duration: 1, ease: [0.22, 1, 0.36, 1], delay: stagger(0.15) });
+                
+                animate(".hero p .mask-text", { y: ["100%", "0%"] }, { duration: 1, delay: 0.3, ease: [0.22, 1, 0.36, 1] });
+                animate(".hero .buttons .mask-text", { y: ["100%", "0%"] }, { duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] });
+                animate(".scroll-indicator-wrapper", { opacity: [0, 0.8] }, { duration: 1, delay: 0.8 });
             });
     } else {
         // Fallback if no preloader
-        animate(".hero h1", { opacity: [0, 1], y: [50, 0] }, { duration: 1, ease: [0.22, 1, 0.36, 1] });
+        animate(".hero h1 .mask-text", { y: ["100%", "0%"] }, { duration: 1, ease: [0.22, 1, 0.36, 1], delay: stagger(0.15) });
     }
 
-    // Scroll Triggers for Cards
+    // 4. Scroll-Linked Parallax using Framer Motion scroll()
+    const heroVideo = document.querySelector(".hero-video");
+    const heroSection = document.querySelector(".hero");
+    if(heroVideo && heroSection) {
+        scroll(animate(heroVideo, { y: ["0%", "30%"] }), {
+            target: heroSection,
+            offset: ["start start", "end start"]
+        });
+    }
+
+    document.querySelectorAll(".img-wrapper img").forEach((img) => {
+        scroll(animate(img, { y: ["-10%", "10%"] }), {
+            target: img.parentElement,
+            offset: ["start end", "end start"]
+        });
+    });
+
+    // 5. Scroll Triggers for Elements
     inView(".editorial-block", (element) => {
         animate(element, { opacity: [0, 1], y: [50, 0] }, { duration: 0.8, ease: [0.22, 1, 0.36, 1] });
     }, { margin: "-100px" });
 
-    // Scroll Triggers for general sections
     inView("section .title", (element) => {
         animate(element, { opacity: [0, 1], x: [-30, 0] }, { duration: 0.8, ease: "easeOut" });
     }, { margin: "-50px" });
