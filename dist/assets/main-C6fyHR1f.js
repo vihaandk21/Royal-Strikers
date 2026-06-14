@@ -4,6 +4,7 @@ import{i as e,n as t,r as n,t as r}from"./vendor-wvuL_0fi.js";(function(){let e=
 Captain Name: `+document.getElementById(`fullName`).value+`
 Phone: `+document.getElementById(`phone`).value+`
 Team Name: `+(document.getElementById(`teamName`)?document.getElementById(`teamName`).value:`N/A`)+`
+Team Category: `+(document.getElementById(`teamGender`)?document.getElementById(`teamGender`).value:`N/A`)+`
 Level: `+document.getElementById(`level`).value+`
 Team Size: `+(o===6?`6 Players`:`6 Players + 3 Subs`)+`
 Transaction ID: `+document.getElementById(`transactionId`).value+`

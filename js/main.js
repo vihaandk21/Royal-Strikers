@@ -498,6 +498,7 @@ function showToast(message, type) {
                 "Captain Name: " + document.getElementById('fullName').value + "\n" +
                 "Phone: " + document.getElementById('phone').value + "\n" +
                 "Team Name: " + (document.getElementById('teamName') ? document.getElementById('teamName').value : 'N/A') + "\n" +
+                "Team Category: " + (document.getElementById('teamGender') ? document.getElementById('teamGender').value : 'N/A') + "\n" +
                 "Level: " + document.getElementById('level').value + "\n" +
                 "Team Size: " + (size === 6 ? '6 Players' : '6 Players + 3 Subs') + "\n" +
                 "Transaction ID: " + document.getElementById('transactionId').value + "\n\n" +
