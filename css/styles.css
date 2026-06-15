@@ -71,10 +71,11 @@ nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(5, 5, 5, 0.7);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: rgba(5, 5, 5, 0.75);
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
     border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.5), inset 0 -1px 0 rgba(212, 175, 55, 0.08);
     z-index: 1000;
 }
 
@@ -355,9 +356,13 @@ section {
 .register {
     max-width: 700px;
     margin: auto;
-    background: #111;
+    background: rgba(10, 10, 10, 0.65);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     padding: 40px 35px;
     border-radius: 20px;
+    border: 1px solid rgba(212, 175, 55, 0.12);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 /* Form group — label + input pair */
@@ -585,10 +590,14 @@ section {
 .tournament-info {
     max-width: 700px;
     margin: 0 auto 30px;
-    background: #111;
+    background: rgba(10, 10, 10, 0.65);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     padding: 30px;
     border-radius: 20px;
+    border: 1px solid rgba(212, 175, 55, 0.1);
     border-left: 4px solid var(--gold-primary);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .tournament-info h3 {
@@ -1275,4 +1284,28 @@ a:active, button:active, .btn:active {
 .reveal.delay-1 { transition-delay: 0.1s; }
 .reveal.delay-2 { transition-delay: 0.2s; }
 .reveal.delay-3 { transition-delay: 0.3s; }
+
+/* =================================================================
+   ACCESSIBILITY — Reduced Motion
+   Disables all animations for users who prefer reduced motion.
+   ================================================================= */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    .reveal {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .mask-text {
+        transform: translateY(0) !important;
+    }
+    .editorial-block {
+        opacity: 1;
+        transform: none;
+    }
+}
 
