@@ -2,7 +2,121 @@ import { animate, stagger, inView, scroll } from "framer-motion/dom";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 
+// --- PREMIUM INTERACTIVITY (UI/UX PRO MAX) ---
+document.addEventListener("DOMContentLoaded", () => {
+    
+    // 1. Initialize Lenis Smooth Scrolling
+    const lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        direction: 'vertical',
+        gestureDirection: 'vertical',
+        smooth: true,
+        mouseMultiplier: 1,
+        smoothTouch: false, // Touch devices use native scroll
+        touchMultiplier: 2,
+        infinite: false,
+    });
 
+    function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    // 2. Magnetic Custom Cursor
+    const cursor = document.getElementById("customCursor");
+    let mouseX = 0, mouseY = 0;
+    let cursorX = 0, cursorY = 0;
+    let isHovering = false;
+
+    // Detect touch device to disable cursor
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    
+    if (cursor && !isTouchDevice) {
+        document.addEventListener("mousemove", (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            if (cursor.style.display === "none" || cursor.style.display === "") {
+                cursor.style.display = "block";
+            }
+        });
+
+        // Easing loop for smooth trailing cursor
+        const animateCursor = () => {
+            // Adjust speed: 0.15 is smooth but responsive
+            cursorX += (mouseX - cursorX) * 0.15;
+            cursorY += (mouseY - cursorY) * 0.15;
+            
+            const scale = isHovering ? 2.5 : 1;
+            cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0) translate(-50%, -50%) scale(${scale})`;
+            
+            requestAnimationFrame(animateCursor);
+        };
+        animateCursor();
+
+        // Magnetic effect on interactive elements
+        const interactiveEls = document.querySelectorAll("a, button, .btn, .editorial-block, input, select, textarea");
+        interactiveEls.forEach(el => {
+            el.addEventListener("mouseenter", () => { isHovering = true; cursor.style.mixBlendMode = "difference"; cursor.style.backgroundColor = "white"; cursor.style.border = "none"; });
+            el.addEventListener("mouseleave", () => { isHovering = false; cursor.style.mixBlendMode = "normal"; cursor.style.backgroundColor = "transparent"; cursor.style.border = "1px solid var(--gold-primary)"; });
+        });
+    }
+
+    // 3. Cinematic Preloader & Hero Reveal
+    const preloader = document.getElementById("preloader");
+    if (preloader) {
+        // Preloader progress bar fills up
+        animate("#preloader-bar", { width: ["0%", "100%"] }, { duration: 1.5, ease: "easeInOut" })
+            .then(() => {
+                // Text scales out, progress bar fades
+                animate("#preloader-text", { opacity: 0, scale: 1.1, filter: "blur(4px)" }, { duration: 0.6, ease: "easeIn" });
+                return animate("#preloader", { opacity: 0 }, { duration: 0.8, delay: 0.2, ease: "easeInOut" });
+            })
+            .then(() => {
+                preloader.style.display = "none";
+                
+                // Hero Background Video scales down to normal
+                animate(".hero-video", { scale: [1.1, 1], filter: ["blur(4px)", "blur(0px)"] }, { duration: 1.5, ease: "easeOut" });
+
+                // Staggered Text Reveal for "ROYAL" and "STRIKERS"
+                animate(".hero h1 .mask-text", { y: ["100%", "0%"] }, { duration: 1, ease: [0.22, 1, 0.36, 1], delay: stagger(0.15) });
+                
+                animate(".hero p .mask-text", { y: ["100%", "0%"] }, { duration: 1, delay: 0.3, ease: [0.22, 1, 0.36, 1] });
+                animate(".hero .buttons .mask-text", { y: ["100%", "0%"] }, { duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] });
+                animate(".scroll-indicator-wrapper", { opacity: [0, 0.8] }, { duration: 1, delay: 0.8 });
+            });
+    } else {
+        // Fallback if no preloader
+        animate(".hero h1 .mask-text", { y: ["100%", "0%"] }, { duration: 1, ease: [0.22, 1, 0.36, 1], delay: stagger(0.15) });
+    }
+
+    // 4. Scroll-Linked Parallax using Framer Motion scroll()
+    const heroVideo = document.querySelector(".hero-video");
+    const heroSection = document.querySelector(".hero");
+    if(heroVideo && heroSection) {
+        scroll(animate(heroVideo, { y: ["0%", "30%"] }), {
+            target: heroSection,
+            offset: ["start start", "end start"]
+        });
+    }
+
+    document.querySelectorAll(".img-wrapper img").forEach((img) => {
+        scroll(animate(img, { y: ["-10%", "10%"] }), {
+            target: img.parentElement,
+            offset: ["start end", "end start"]
+        });
+    });
+
+    // 5. Scroll Triggers for Elements
+    inView(".editorial-block", (element) => {
+        animate(element, { opacity: [0, 1], y: [50, 0] }, { duration: 0.8, ease: [0.22, 1, 0.36, 1] });
+    }, { margin: "-100px" });
+
+    inView("section .title", (element) => {
+        animate(element, { opacity: [0, 1], x: [-30, 0] }, { duration: 0.8, ease: "easeOut" });
+    }, { margin: "-50px" });
+});
 
 
 /* =================================================================
@@ -586,16 +700,13 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-// =================================================================
-// ROYAL STRIKERS — Premium Interactivity (Unified, De-duplicated)
-// =================================================================
+// --- HYPER-LUXURY INTERACTIONS (>₹10L AESTHETIC) ---
 document.addEventListener("DOMContentLoaded", () => {
+    // 1. Smooth Scroll (Lenis) - Only for desktop/non-touch to preserve mobile performance
     const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    // ── 1. Lenis Smooth Scroll (desktop + non-reduced-motion only) ──
-    if (!isTouchDevice && !prefersReducedMotion) {
-        new Lenis({
+    
+    if (!isTouchDevice) {
+        const lenis = new Lenis({
             autoRaf: true,
             duration: 1.2,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -604,192 +715,151 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ── 2. Magnetic Trailing Cursor (desktop only) ──
+    // 2. Custom Magnetic Cursor
     const cursor = document.getElementById('customCursor');
     if (cursor && !isTouchDevice) {
-        let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0, isHovering = false;
-
         document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            if (!cursor.style.display || cursor.style.display === 'none') cursor.style.display = 'block';
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
         });
 
-        // RAF loop — cursor lags behind mouse with lerp (0.15 = snappy but smooth)
-        const tickCursor = () => {
-            cursorX += (mouseX - cursorX) * 0.15;
-            cursorY += (mouseY - cursorY) * 0.15;
-            cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0) translate(-50%, -50%) scale(${isHovering ? 2.5 : 1})`;
-            requestAnimationFrame(tickCursor);
-        };
-        tickCursor();
-
-        document.querySelectorAll('a, button, .btn, .editorial-block, input, select, textarea').forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                isHovering = true;
-                cursor.style.mixBlendMode = 'difference';
-                cursor.style.backgroundColor = 'white';
-                cursor.style.border = 'none';
-            });
-            el.addEventListener('mouseleave', () => {
-                isHovering = false;
-                cursor.style.mixBlendMode = 'normal';
-                cursor.style.backgroundColor = 'transparent';
-                cursor.style.border = '1px solid var(--gold-primary)';
-            });
+        // Magnetic hover effects
+        const interactiveElements = document.querySelectorAll('a, button, input, select, textarea, .card');
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
         });
     }
 
-    // ── 3. Cinematic Preloader with Video Detection ──
+    
+    // 4. Cinematic Page Transitions
+    const transitionEl = document.getElementById('page-transition');
+    
+    // Animate OUT (when page loads)
+    if (transitionEl) {
+        animate(transitionEl, { y: ["0%", "-100%"] }, { duration: 0.8, ease: [0.76, 0, 0.24, 1] }).then(() => {
+            transitionEl.style.display = 'none';
+        });
+    }
+
+    // Intercept links for Animate IN
+    document.querySelectorAll('a').forEach(anchor => {
+        anchor.addEventListener('click', (e) => {
+            const href = anchor.getAttribute('href');
+            // Check if internal link and not a hash
+            if (href && !href.startsWith('#') && !href.startsWith('http') && !anchor.hasAttribute('target')) {
+                e.preventDefault();
+                transitionEl.style.display = 'block';
+                animate(transitionEl, { y: ["100%", "0%"] }, { duration: 0.6, ease: [0.76, 0, 0.24, 1] }).then(() => {
+                    window.location.href = href;
+                });
+            }
+        });
+    });
+
+    // 3. Spotlight Cards
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty('--x', x + 'px');
+            card.style.setProperty('--y', y + 'px');
+        });
+    });
+
+    // --- PHASE 3 LUXURY LOGIC ---
+    
+    // 1. Preloader Loading Bar & Masked Text Reveals
     const loadingBar = document.getElementById('preloader-bar');
     const preloaderWrap = document.getElementById('preloader');
+    
+    // Find which video is actually active/visible based on CSS media queries
     const desktopVideo = document.querySelector('.hero-video-desktop');
     const mobileVideo = document.querySelector('.hero-video-mobile');
     let activeVideo = null;
-
+    
     if (desktopVideo && window.getComputedStyle(desktopVideo).display !== 'none') {
         activeVideo = desktopVideo;
-    } else if (mobileVideo) {
+    } else if (mobileVideo && window.getComputedStyle(mobileVideo).display !== 'none') {
         activeVideo = mobileVideo;
     }
-
+    
     if (loadingBar && preloaderWrap) {
         let isLoaded = false;
-
+        
         const finishPreloader = () => {
             if (isLoaded) return;
             isLoaded = true;
-
-            animate(loadingBar, { width: '100%' }, { duration: 0.3, ease: 'easeOut' }).then(() => {
+            
+            // Snap bar to 100% quickly
+            animate(loadingBar, { width: "100%" }, { duration: 0.3, ease: "easeOut" }).then(() => {
+                // Hold for 1 second before fading out
                 setTimeout(() => {
-                    animate('#preloader-text', { opacity: 0, scale: 1.1, filter: 'blur(4px)' }, { duration: 0.6, ease: 'easeIn' });
-                    animate(preloaderWrap, { opacity: 0 }, { duration: 0.8, delay: 0.2, ease: 'easeInOut' }).then(() => {
+                    // Fade out preloader
+                    animate(preloaderWrap, { opacity: 0 }, { duration: 0.8, ease: "easeInOut" }).then(() => {
                         preloaderWrap.style.display = 'none';
-
-                        if (activeVideo) activeVideo.play().catch(() => {});
-
-                        // Hero video cinematic scale-down 1.1x → 1.0x
-                        if (!prefersReducedMotion) {
-                            animate('.hero-video', { scale: [1.1, 1], filter: ['blur(4px)', 'blur(0px)'] }, { duration: 1.5, ease: 'easeOut' });
+                        
+                        // Force video to play if autoplay failed
+                        if (activeVideo) {
+                            activeVideo.play().catch(err => console.warn("Video play failed:", err));
                         }
-
-                        // Staggered mask-text reveal
+                        
+                        // Trigger Masked Text Reveals
                         const maskTexts = document.querySelectorAll('.mask-text');
-                        if (maskTexts.length > 0 && !prefersReducedMotion) {
-                            animate(maskTexts, { y: ['100%', '0%'] }, { duration: 1.2, ease: [0.76, 0, 0.24, 1], delay: stagger(0.15) });
-                        } else {
-                            maskTexts.forEach(el => { el.style.transform = 'translateY(0)'; });
+                        if(maskTexts.length > 0) {
+                            animate(maskTexts, { y: ["100%", "0%"] }, { duration: 1.2, ease: [0.76, 0, 0.24, 1], delay: stagger(0.15) });
                         }
-
-                        animate('.scroll-indicator-wrapper', { opacity: [0, 0.8] }, { duration: 1, delay: 0.8 });
                     });
                 }, 1000);
             });
         };
 
-        if (!prefersReducedMotion) {
-            animate(loadingBar, { width: ['0%', '90%'] }, { duration: 5.0, ease: 'circOut' });
-        } else {
-            loadingBar.style.width = '90%';
-        }
+        // Start a slow progressive loading bar that takes 5 seconds to reach 90%
+        animate(loadingBar, { width: ["0%", "90%"] }, { duration: 5.0, ease: "circOut" });
 
-        setTimeout(finishPreloader, 5000);
+        // Max 5 seconds timeout
+        setTimeout(() => {
+            finishPreloader();
+        }, 5000);
 
+        // Listen for active video loaded
         if (activeVideo) {
+            // If the video is already ready before JS executes
             if (activeVideo.readyState >= 3) {
                 finishPreloader();
             } else {
-                activeVideo.addEventListener('canplay', finishPreloader, { once: true });
+                activeVideo.addEventListener('canplay', finishPreloader);
             }
         } else {
+            // Fallback if no active video element
             setTimeout(finishPreloader, 2000);
         }
     }
 
-    // ── 4. Scroll-Linked Parallax ──
-    if (!prefersReducedMotion) {
-        const heroVideoEl = document.querySelector('.hero-video');
-        const heroSection = document.querySelector('.hero');
-        if (heroVideoEl && heroSection) {
-            scroll(animate(heroVideoEl, { y: ['0%', '30%'] }), {
-                target: heroSection,
-                offset: ['start start', 'end start']
-            });
-        }
-
-        document.querySelectorAll('.img-wrapper img').forEach(img => {
-            scroll(animate(img, { y: ['-10%', '10%'] }), {
-                target: img.parentElement,
-                offset: ['start end', 'end start']
-            });
-        });
-    }
-
-    // ── 5. inView Scroll Triggers ──
-    inView('.editorial-block', (el) => {
-        animate(el, { opacity: [0, 1], y: [50, 0] }, { duration: 0.8, ease: [0.22, 1, 0.36, 1] });
-    }, { margin: '-100px' });
-
-    inView('section .title', (el) => {
-        animate(el, { opacity: [0, 1], x: [-30, 0] }, { duration: 0.8, ease: 'easeOut' });
-    }, { margin: '-50px' });
-
-    // ── 6. Cinematic Page Transitions ──
-    const transitionEl = document.getElementById('page-transition');
-    if (transitionEl) {
-        animate(transitionEl, { y: ['0%', '-100%'] }, { duration: 0.8, ease: [0.76, 0, 0.24, 1] }).then(() => {
-            transitionEl.style.display = 'none';
-        });
-
-        document.querySelectorAll('a').forEach(anchor => {
-            anchor.addEventListener('click', (e) => {
-                const href = anchor.getAttribute('href');
-                if (href && !href.startsWith('#') && !href.startsWith('http') && !anchor.hasAttribute('target')) {
-                    e.preventDefault();
-                    transitionEl.style.display = 'block';
-                    animate(transitionEl, { y: ['100%', '0%'] }, { duration: 0.6, ease: [0.76, 0, 0.24, 1] }).then(() => {
-                        window.location.href = href;
-                    });
-                }
-            });
-        });
-    }
-
-    // ── 7. Spotlight Cards ──
-    document.querySelectorAll('.card').forEach(card => {
+    // 2. 3D Tilt Gallery Cards
+    const tiltCards = document.querySelectorAll('.gallery-grid img, .sport-card');
+    tiltCards.forEach(card => {
         card.addEventListener('mousemove', (e) => {
             const rect = card.getBoundingClientRect();
-            card.style.setProperty('--x', (e.clientX - rect.left) + 'px');
-            card.style.setProperty('--y', (e.clientY - rect.top) + 'px');
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Calculate rotation based on cursor position (-10 to 10 degrees)
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = ((y - centerY) / centerY) * -10;
+            const rotateY = ((x - centerX) / centerX) * 10;
+            
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
         });
     });
 
-    // ── 8. 3D Tilt Gallery (desktop only) ──
-    if (!isTouchDevice) {
-        document.querySelectorAll('.gallery-grid img, .sport-card').forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const rotateX = (((e.clientY - rect.top) - rect.height / 2) / (rect.height / 2)) * -10;
-                const rotateY = (((e.clientX - rect.left) - rect.width / 2) / (rect.width / 2)) * 10;
-                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-            });
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
-            });
-        });
-    }
-
-    // ── 9. Framer Motion Spring Bounce on Primary Buttons (NEW) ──
-    if (!isTouchDevice && !prefersReducedMotion) {
-        document.querySelectorAll('.btn.primary, .submit-btn').forEach(btn => {
-            btn.addEventListener('mouseenter', () => {
-                animate(btn, { scale: 1.06 }, { type: 'spring', stiffness: 400, damping: 15 });
-            });
-            btn.addEventListener('mouseleave', () => {
-                animate(btn, { scale: 1 }, { type: 'spring', stiffness: 300, damping: 20 });
-            });
-        });
-    }
 });
 
 // =================================================================
