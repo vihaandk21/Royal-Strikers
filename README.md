@@ -2,7 +2,7 @@
 
 A premium sports club website for **Throwball**, **Volleyball**, and **Badminton** tournaments. Designed with a luxury hyper-modern aesthetic and a robust backend flow.
 
-🌐 **Live Site**: [royal-strikers-rust.vercel.app](https://royal-strikers-rust.vercel.app/)
+🌐 **Live Site**: [royal-strikers-sports-club.vercel.app](https://royal-strikers-rust.vercel.app/)
 
 ---
 
