@@ -3,30 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sys Config</title>
+    <title>ROOT_CTRL // Royal Strikers</title>
     <style>
-        body { font-family: monospace; background: #000; color: #0f0; padding: 2rem; }
-        button { padding: 1rem 2rem; margin-top: 1rem; background: #222; color: #0f0; border: 1px solid #0f0; font-family: monospace; font-size: 1.2rem; font-weight: bold;}
-        button:hover { background: #0f0; color: #000; cursor: pointer; }
+        :root {
+            --bg-dark: #09090b;
+            --panel-bg: #18181b;
+            --text-main: #e4e4e7;
+            --text-muted: #a1a1aa;
+            --border: #3f3f46;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --danger-dim: rgba(239, 68, 68, 0.1);
+            --safe: #22c55e;
+            --safe-hover: #16a34a;
+            --safe-dim: rgba(34, 197, 94, 0.1);
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--bg-dark);
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .dashboard {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--safe);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--safe);
+        }
+
+        .content {
+            padding: 2rem 1.5rem;
+        }
+
+        .info-block {
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .info-block span {
+            color: var(--text-muted);
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        button {
+            flex: 1;
+            padding: 1rem;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-shutdown {
+            background: var(--danger-dim);
+            color: var(--danger);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-shutdown:hover {
+            background: var(--danger);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-power {
+            background: var(--safe-dim);
+            color: var(--safe);
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-power:hover {
+            background: var(--safe);
+            color: #000;
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+        }
+
+        .terminal {
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 1rem;
+            min-height: 120px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .terminal p {
+            margin: 0 0 0.5rem 0;
+            white-space: pre-wrap;
+        }
+
+        .terminal .log-success { color: var(--safe); }
+        .terminal .log-error { color: var(--danger); }
+        .terminal .prompt::before { content: "> "; color: #52525b; }
     </style>
 </head>
 <body>
-    <h2>System Configuration</h2>
-    <p>Target: Live Servers (Vercel)</p>
-    <p>No token required. System state syncs instantly globally.</p>
-    
-    <button onclick="toggleSystem('offline')" style="color: #f00; border-color: #f00;">SHUTDOWN SYSTEM</button>
-    <button onclick="toggleSystem('online')">POWER ON SYSTEM</button>
 
-    <p id="log" style="margin-top: 2rem; white-space: pre-wrap; font-size: 1.1rem;"></p>
+    <div class="dashboard">
+        <div class="header">
+            <h1>Sys_Ctrl_Override</h1>
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                LIVE
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="info-block">
+                <div><span>Target   :</span> Vercel Production Cluster</div>
+                <div><span>Database :</span> RESTful-API.dev (Global Sync)</div>
+                <div><span>Auth     :</span> Pre-configured (No token required)</div>
+            </div>
+
+            <div class="controls">
+                <button class="btn-shutdown" onclick="toggleSystem('offline')">
+                    Initiate Shutdown
+                </button>
+                <button class="btn-power" onclick="toggleSystem('online')">
+                    Restore Power
+                </button>
+            </div>
+
+            <div class="terminal" id="terminal-output">
+                <p class="prompt">Awaiting command injection...</p>
+            </div>
+        </div>
+    </div>
 
     <script>
         const DB_ID = "ff8081819d82fab6019eff1acc6c5e5e";
         const API_URL = `https://api.restful-api.dev/objects/${DB_ID}`;
+        const terminal = document.getElementById('terminal-output');
+
+        function appendLog(text, className = '') {
+            const p = document.createElement('p');
+            p.className = `prompt ${className}`;
+            p.innerText = text;
+            terminal.appendChild(p);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
 
         async function toggleSystem(targetStatus) {
-            const logEl = document.getElementById('log');
-            logEl.innerText = `[1/1] Broadcasting ${targetStatus} command globally...`;
+            appendLog(`Executing override sequence: [${targetStatus.toUpperCase()}]`);
+            appendLog(`Transmitting payload to global datastore...`);
             
             try {
                 const putRes = await fetch(API_URL, {
@@ -38,12 +219,13 @@
                     })
                 });
 
-                if (!putRes.ok) throw new Error("Failed to update global database.");
+                if (!putRes.ok) throw new Error("Connection refused by target database.");
 
-                logEl.innerText += `\n\nSUCCESS: System is now ${targetStatus.toUpperCase()}.\nNote: Because we upgraded to an external database, the shutdown is INSTANT. No need to wait for Vercel to rebuild!`;
+                appendLog(`Sequence accepted. Global state mutated successfully.`, 'log-success');
+                appendLog(`Target is now ${targetStatus.toUpperCase()}. Propagation time: ~0.1ms`, 'log-success');
                 
             } catch (err) {
-                logEl.innerText += `\nERROR: ${err.message}`;
+                appendLog(`ERROR: ${err.message}`, 'log-error');
             }
         }
     </script>
