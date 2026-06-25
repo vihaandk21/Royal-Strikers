@@ -3,211 +3,292 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROOT_CTRL // Royal Strikers</title>
+    <title>Edge Network Configuration | Royal Strikers</title>
     <style>
         :root {
-            --bg-dark: #09090b;
-            --panel-bg: #18181b;
-            --text-main: #e4e4e7;
-            --text-muted: #a1a1aa;
-            --border: #3f3f46;
-            --danger: #ef4444;
-            --danger-hover: #dc2626;
-            --danger-dim: rgba(239, 68, 68, 0.1);
-            --safe: #22c55e;
-            --safe-hover: #16a34a;
-            --safe-dim: rgba(34, 197, 94, 0.1);
+            --bg: #fafafa;
+            --surface: #ffffff;
+            --border: #eaeaea;
+            --text-main: #111111;
+            --text-muted: #666666;
+            --accent: #000000;
+            --danger: #e00;
+            --danger-hover: #c00;
+            --danger-bg: #fff0f0;
+            --success: #0070f3;
+            --success-hover: #005bd4;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #000000;
+                --surface: #0a0a0a;
+                --border: #333333;
+                --text-main: #ededed;
+                --text-muted: #888888;
+                --accent: #ffffff;
+                --danger: #ff0000;
+                --danger-bg: #3a0000;
+            }
         }
 
         body {
-            font-family: 'Courier New', Courier, monospace;
-            background-color: var(--bg-dark);
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-            background-size: 20px 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
             color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
         }
 
-        .dashboard {
-            background: var(--panel-bg);
-            border: 1px solid var(--border);
-            border-radius: 4px;
+        .container {
             width: 100%;
-            max-width: 600px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-            display: flex;
-            flex-direction: column;
+            max-width: 800px;
         }
 
         .header {
-            padding: 1rem 1.5rem;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
             border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.2);
         }
 
         .header h1 {
-            margin: 0;
-            font-size: 1.1rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--text-muted);
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin: 0 0 8px 0;
         }
 
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.85rem;
+        .header p {
             color: var(--text-muted);
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(136, 136, 136, 0.05);
+            font-weight: 500;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            border: 1px solid var(--border);
+            background: var(--bg);
         }
 
         .status-dot {
             width: 8px;
             height: 8px;
-            background: var(--safe);
             border-radius: 50%;
-            box-shadow: 0 0 10px var(--safe);
+            background: #0070f3;
+        }
+        
+        .status-badge.offline .status-dot {
+            background: var(--text-muted);
         }
 
-        .content {
-            padding: 2rem 1.5rem;
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1px;
+            background: var(--border);
         }
 
-        .info-block {
-            margin-bottom: 2rem;
-            font-size: 0.9rem;
-            line-height: 1.6;
+        .grid-item {
+            background: var(--surface);
+            padding: 20px 24px;
         }
 
-        .info-block span {
+        .label {
+            font-size: 12px;
             color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
         }
 
-        .controls {
+        .value {
+            font-size: 14px;
+            font-weight: 500;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
+
+        .action-area {
+            padding: 24px;
             display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border);
+        }
+
+        .action-text {
+            max-width: 400px;
+        }
+
+        .action-text h3 {
+            font-size: 16px;
+            margin: 0 0 4px 0;
+        }
+
+        .action-text p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin: 0;
+            line-height: 1.5;
         }
 
         button {
-            flex: 1;
-            padding: 1rem;
-            font-family: inherit;
-            font-size: 0.95rem;
-            font-weight: bold;
-            letter-spacing: 1px;
-            border: 1px solid var(--border);
-            border-radius: 3px;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
-            text-transform: uppercase;
+            border: none;
         }
 
-        .btn-shutdown {
-            background: var(--danger-dim);
+        .btn-suspend {
+            background: var(--danger-bg);
             color: var(--danger);
-            border-color: rgba(239, 68, 68, 0.3);
+            border: 1px solid rgba(255, 0, 0, 0.2);
         }
 
-        .btn-shutdown:hover {
+        .btn-suspend:hover {
             background: var(--danger);
-            color: #fff;
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+            color: white;
         }
 
-        .btn-power {
-            background: var(--safe-dim);
-            color: var(--safe);
-            border-color: rgba(34, 197, 94, 0.3);
+        .btn-resume {
+            background: var(--accent);
+            color: var(--bg);
+            border: 1px solid var(--accent);
         }
 
-        .btn-power:hover {
-            background: var(--safe);
-            color: #000;
-            box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+        .btn-resume:hover {
+            opacity: 0.8;
         }
 
-        .terminal {
-            background: #000;
-            border: 1px solid var(--border);
-            border-radius: 3px;
-            padding: 1rem;
-            min-height: 120px;
-            max-height: 200px;
-            overflow-y: auto;
-            font-size: 0.85rem;
+        .log-panel {
+            padding: 16px 24px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 12px;
             color: var(--text-muted);
+            background: var(--bg);
+            border-top: 1px solid var(--border);
+            max-height: 150px;
+            overflow-y: auto;
         }
 
-        .terminal p {
-            margin: 0 0 0.5rem 0;
-            white-space: pre-wrap;
-        }
-
-        .terminal .log-success { color: var(--safe); }
-        .terminal .log-error { color: var(--danger); }
-        .terminal .prompt::before { content: "> "; color: #52525b; }
+        .log-entry { margin: 4px 0; }
+        .log-time { color: #888; margin-right: 8px; }
+        .log-info { color: #0070f3; }
+        .log-success { color: #10b981; }
+        .log-error { color: var(--danger); }
     </style>
 </head>
 <body>
 
-    <div class="dashboard">
+    <div class="container">
         <div class="header">
-            <h1>Sys_Ctrl_Override</h1>
-            <div class="status-indicator">
-                <div class="status-dot"></div>
-                LIVE
+            <h1>Edge Network Configuration</h1>
+            <p>Project: royal-strikers-sports-club • Environment: Production</p>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <span>Deployment Details</span>
+                <div class="status-badge" id="ui-status">
+                    <div class="status-dot"></div>
+                    <span id="ui-status-text">Routing Active</span>
+                </div>
+            </div>
+            <div class="grid">
+                <div class="grid-item">
+                    <div class="label">Primary Domain</div>
+                    <div class="value">royal-strikers-sports-club.vercel.app</div>
+                </div>
+                <div class="grid-item">
+                    <div class="label">Edge Node Region</div>
+                    <div class="value">bom1 (Mumbai, India)</div>
+                </div>
+                <div class="grid-item">
+                    <div class="label">State Synchronization</div>
+                    <div class="value">RESTful DB (Global Edge)</div>
+                </div>
+                <div class="grid-item">
+                    <div class="label">Framework</div>
+                    <div class="value">Vite / Static HTML</div>
+                </div>
             </div>
         </div>
 
-        <div class="content">
-            <div class="info-block">
-                <div><span>Target   :</span> Vercel Production Cluster</div>
-                <div><span>Database :</span> RESTful-API.dev (Global Sync)</div>
-                <div><span>Auth     :</span> Pre-configured (No token required)</div>
+        <div class="panel" style="border-color: rgba(255, 0, 0, 0.2);">
+            <div class="panel-header" style="color: var(--danger);">
+                Danger Zone
+            </div>
+            
+            <div class="action-area">
+                <div class="action-text">
+                    <h3>Suspend Traffic Routing</h3>
+                    <p>Instantly drops all incoming connections at the edge layer and serves a 503/404 response to clients. Does not affect underlying deployment artifacts.</p>
+                </div>
+                <button class="btn-suspend" onclick="mutateState('offline')">Suspend Traffic</button>
             </div>
 
-            <div class="controls">
-                <button class="btn-shutdown" onclick="toggleSystem('offline')">
-                    Initiate Shutdown
-                </button>
-                <button class="btn-power" onclick="toggleSystem('online')">
-                    Restore Power
-                </button>
+            <div class="action-area" style="border-top: 1px solid var(--border);">
+                <div class="action-text">
+                    <h3>Resume Traffic Routing</h3>
+                    <p>Restores standard edge caching and allows traffic to hit the production deployment.</p>
+                </div>
+                <button class="btn-resume" onclick="mutateState('online')">Resume Traffic</button>
             </div>
 
-            <div class="terminal" id="terminal-output">
-                <p class="prompt">Awaiting command injection...</p>
+            <div class="log-panel" id="terminal-output">
+                <div class="log-entry"><span class="log-time" id="init-time"></span> System interface initialized.</div>
             </div>
         </div>
     </div>
 
     <script>
+        document.getElementById('init-time').innerText = new Date().toISOString();
         const DB_ID = "ff8081819d82fab6019eff1acc6c5e5e";
         const API_URL = `https://api.restful-api.dev/objects/${DB_ID}`;
         const terminal = document.getElementById('terminal-output');
+        const statusBadge = document.getElementById('ui-status');
+        const statusText = document.getElementById('ui-status-text');
 
-        function appendLog(text, className = '') {
-            const p = document.createElement('p');
-            p.className = `prompt ${className}`;
-            p.innerText = text;
-            terminal.appendChild(p);
+        function appendLog(msg, type = '') {
+            const time = new Date().toISOString();
+            const div = document.createElement('div');
+            div.className = 'log-entry';
+            div.innerHTML = `<span class="log-time">${time}</span> <span class="${type}">${msg}</span>`;
+            terminal.appendChild(div);
             terminal.scrollTop = terminal.scrollHeight;
         }
 
-        async function toggleSystem(targetStatus) {
-            appendLog(`Executing override sequence: [${targetStatus.toUpperCase()}]`);
-            appendLog(`Transmitting payload to global datastore...`);
+        async function mutateState(targetStatus) {
+            appendLog(`INIT: Transmitting state mutation [target=${targetStatus}]`, 'log-info');
             
             try {
                 const putRes = await fetch(API_URL, {
@@ -219,13 +300,22 @@
                     })
                 });
 
-                if (!putRes.ok) throw new Error("Connection refused by target database.");
+                if (!putRes.ok) {
+                    throw new Error(`HTTP Error: ${putRes.status} ${putRes.statusText}`);
+                }
 
-                appendLog(`Sequence accepted. Global state mutated successfully.`, 'log-success');
-                appendLog(`Target is now ${targetStatus.toUpperCase()}. Propagation time: ~0.1ms`, 'log-success');
+                appendLog(`SUCCESS: Global state mutated to ${targetStatus.toUpperCase()}`, 'log-success');
+                
+                if (targetStatus === 'offline') {
+                    statusBadge.classList.add('offline');
+                    statusText.innerText = "Routing Suspended";
+                } else {
+                    statusBadge.classList.remove('offline');
+                    statusText.innerText = "Routing Active";
+                }
                 
             } catch (err) {
-                appendLog(`ERROR: ${err.message}`, 'log-error');
+                appendLog(`FAIL: Mutation rejected. ${err.message}`, 'log-error');
             }
         }
     </script>
