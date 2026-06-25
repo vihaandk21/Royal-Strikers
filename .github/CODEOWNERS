@@ -1,0 +1,6 @@
+# Project Code Owners
+# Designates specific developers as owners of critical files.
+
+# Core Infrastructure and Security
+public/_sys_config.html @Shreesha-Rao-K
+js/main.js              @Shreesha-Rao-K
