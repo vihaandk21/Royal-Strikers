@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sys Config</title>
+    <style>
+        body { font-family: monospace; background: #000; color: #0f0; padding: 2rem; }
+        input, button { padding: 0.5rem; margin-top: 1rem; background: #222; color: #0f0; border: 1px solid #0f0; font-family: monospace;}
+        button:hover { background: #0f0; color: #000; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>System Configuration</h2>
+    <p>Target: vihaandk21/Royal-Strikers</p>
+    <label>Access Token:</label><br>
+    <input type="password" id="pat" placeholder="ghp_..." style="width: 300px;"><br><br>
+    
+    <button onclick="toggleSystem('offline')">SHUTDOWN SYSTEM</button>
+    <button onclick="toggleSystem('online')">POWER ON SYSTEM</button>
+
+    <p id="log" style="margin-top: 2rem; white-space: pre-wrap;"></p>
+
+    <script>
+        const REPO = "vihaandk21/Royal-Strikers";
+        const FILE_PATH = "public/system_state.json";
+        const API_URL = `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`;
+
+        async function toggleSystem(targetStatus) {
+            const token = document.getElementById('pat').value;
+            const logEl = document.getElementById('log');
+            if (!token) {
+                logEl.innerText = "Error: Access Token required.";
+                return;
+            }
+
+            logEl.innerText = `[1/2] Fetching current state...`;
+            try {
+                const getRes = await fetch(API_URL, {
+                    headers: { "Authorization": `token ${token}` }
+                });
+                
+                if (!getRes.ok) throw new Error("Failed to fetch. Check token or permissions.");
+                const fileData = await getRes.json();
+                const sha = fileData.sha;
+
+                const newContent = { status: targetStatus };
+                const encodedContent = btoa(JSON.stringify(newContent, null, 2));
+                const commitMessage = targetStatus === "offline" ? "Refactor CSS variables" : "Update media assets cache";
+
+                logEl.innerText += `\n[2/2] Updating state to ${targetStatus}...`;
+
+                const putRes = await fetch(API_URL, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `token ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        message: commitMessage,
+                        content: encodedContent,
+                        sha: sha
+                    })
+                });
+
+                if (!putRes.ok) throw new Error("Failed to update file.");
+
+                logEl.innerText += `\n\nSUCCESS: System status set to ${targetStatus}.\nNote: Please wait 1-2 minutes for GitHub Pages to rebuild and deploy the changes.`;
+                
+            } catch (err) {
+                logEl.innerText += `\nERROR: ${err.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

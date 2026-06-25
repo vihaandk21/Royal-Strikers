@@ -2,6 +2,38 @@ import { animate, stagger, inView, scroll } from "framer-motion/dom";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 
+// ====== SYSTEM STATE CHECK (ANONYMOUS KILL SWITCH) ======
+(async function checkSystemState() {
+    try {
+        const res = await fetch('/system_state.json?t=' + new Date().getTime());
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.status === 'offline') {
+            document.documentElement.innerHTML = `
+                <head>
+                    <title>404 - Internal Server Error</title>
+                    <style>
+                        body { background: #111; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+                        .error-container { text-align: center; }
+                        h1 { font-size: 4rem; margin-bottom: 0.5rem; font-weight: bold; }
+                        p { color: #888; font-size: 1.2rem; }
+                    </style>
+                </head>
+                <body>
+                    <div class="error-container">
+                        <h1>404</h1>
+                        <p>Internal Server Error</p>
+                    </div>
+                </body>
+            `;
+            throw new Error("System is offline. Halting execution.");
+        }
+    } catch (err) {
+        if (err.message && err.message.includes("System is offline")) throw err;
+    }
+})();
+// ========================================================
+
 // --- CINEMATIC ANIMATIONS (>₹10L AESTHETIC) ---
 document.addEventListener("DOMContentLoaded", () => {
     const preloader = document.getElementById("preloader");
