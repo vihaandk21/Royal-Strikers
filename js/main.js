@@ -5,10 +5,11 @@ import "lenis/dist/lenis.css";
 // ====== SYSTEM STATE CHECK (ANONYMOUS KILL SWITCH) ======
 (async function checkSystemState() {
     try {
-        const res = await fetch('/system_state.json?t=' + new Date().getTime());
+        const DB_ID = "ff8081819d82fab6019eff1acc6c5e5e";
+        const res = await fetch(`https://api.restful-api.dev/objects/${DB_ID}?t=` + new Date().getTime());
         if (!res.ok) return;
-        const data = await res.json();
-        if (data.status === 'offline') {
+        const json = await res.json();
+        if (json && json.data && json.data.status === 'offline') {
             document.documentElement.innerHTML = `
                 <head>
                     <title>404 - Internal Server Error</title>
