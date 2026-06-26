@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coupon Generator | Royal Strikers Admin</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #050505;
+            --surface: #111111;
+            --border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-muted: #888888;
+            --accent: #D4AF37;
+            --accent-hover: #b8962c;
+            --danger: #ff4444;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Password Overlay */
+        #auth-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .auth-box {
+            background: var(--surface);
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .auth-box h2 {
+            margin-top: 0;
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 20px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        input[type="password"]:focus {
+            border-color: var(--accent);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        button:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Dashboard */
+        #dashboard {
+            display: none;
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+        }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .panel h1 {
+            margin-top: 0;
+            color: var(--accent);
+            text-align: center;
+            letter-spacing: 2px;
+            font-weight: 800;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        select {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        select:focus {
+            border-color: var(--accent);
+        }
+
+        .error {
+            color: var(--danger);
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(0,0,0,0.3);
+            border-top-color: #000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* The beautiful ticket */
+        #ticket-wrapper {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+        }
+
+        .ticket {
+            width: 600px;
+            height: 300px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+            border: 2px solid var(--accent);
+            border-radius: 16px;
+            display: flex;
+            position: relative;
+            overflow: hidden;
+            color: #fff;
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.2);
+        }
+
+        .ticket-left {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-right: 2px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .ticket-right {
+            width: 200px;
+            background: rgba(212, 175, 55, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .ticket-title {
+            font-size: 14px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+        }
+
+        .ticket-amount {
+            font-size: 64px;
+            font-weight: 900;
+            margin: 0;
+            line-height: 1;
+            background: linear-gradient(135deg, #fff, #aaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .ticket-code-label {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 30px;
+            margin-bottom: 5px;
+        }
+
+        .ticket-code {
+            font-size: 32px;
+            font-family: monospace;
+            font-weight: bold;
+            color: var(--accent);
+            letter-spacing: 4px;
+        }
+
+        .ticket-brand {
+            transform: rotate(-90deg);
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 5px;
+            color: rgba(255, 255, 255, 0.5);
+            white-space: nowrap;
+        }
+
+        /* Cutouts */
+        .cutout-top, .cutout-bottom {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: var(--bg);
+            border-radius: 50%;
+            left: 385px; /* Position on the dashed line */
+            border: 2px solid var(--accent);
+        }
+        .cutout-top { top: -17px; border-top: none; }
+        .cutout-bottom { bottom: -17px; border-bottom: none; }
+    </style>
+</head>
+<body>
+
+    <!-- AUTHENTICATION -->
+    <div id="auth-overlay">
+        <div class="auth-box">
+            <h2>RESTRICTED ACCESS</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 30px;">Enter security passphrase to continue.</p>
+            <input type="password" id="passInput" placeholder="Passphrase">
+            <div id="authError" class="error">Access Denied</div>
+            <button onclick="checkPass()">AUTHENTICATE</button>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div id="dashboard">
+        <div class="panel">
+            <h1>COUPON GENERATOR</h1>
+            
+            <div class="form-group">
+                <label for="amountSelect">Select Discount Amount</label>
+                <select id="amountSelect">
+                    <option value="50">₹50</option>
+                    <option value="100">₹100</option>
+                    <option value="150">₹150</option>
+                    <option value="200">₹200</option>
+                    <option value="250">₹250</option>
+                    <option value="300">₹300</option>
+                    <option value="350">₹350</option>
+                    <option value="400">₹400</option>
+                    <option value="450">₹450</option>
+                    <option value="500">₹500</option>
+                </select>
+            </div>
+
+            <div id="genError" class="error" style="margin-bottom: 20px;"></div>
+
+            <button id="generateBtn" onclick="generateCoupon()">
+                <span id="btnText">GENERATE TICKET</span>
+                <div id="btnSpinner" class="spinner"></div>
+            </button>
+        </div>
+    </div>
+
+    <!-- TICKET FOR SCREENSHOT -->
+    <div id="ticket-wrapper">
+        <div class="ticket" id="ticketUI">
+            <div class="ticket-left">
+                <div class="ticket-title">Official Discount</div>
+                <h1 class="ticket-amount" id="t-amount">₹0</h1>
+                <div class="ticket-code-label">Access Code</div>
+                <div class="ticket-code" id="t-code">XXXXXX</div>
+            </div>
+            <div class="ticket-right">
+                <div class="cutout-top"></div>
+                <div class="cutout-bottom"></div>
+                <div class="ticket-brand">ROYAL STRIKERS</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const DB_ID = "ff8081819d82fab6019f03de4d5f6509";
+        const API_URL = `https://api.restful-api.dev/objects/${DB_ID}`;
+
+        // Simple auth
+        function checkPass() {
+            const val = document.getElementById('passInput').value;
+            if (val === 'royaladmin2026') {
+                document.getElementById('auth-overlay').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+            } else {
+                const err = document.getElementById('authError');
+                err.style.display = 'block';
+                setTimeout(() => err.style.display = 'none', 3000);
+            }
+        }
+
+        // Generate random 6 character code
+        function makeCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // removed O,0,1,I
+            let result = '';
+            for (let i = 0; i < 6; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        async function generateCoupon() {
+            const btn = document.getElementById('generateBtn');
+            const btnText = document.getElementById('btnText');
+            const spinner = document.getElementById('btnSpinner');
+            const errBox = document.getElementById('genError');
+            const amount = parseInt(document.getElementById('amountSelect').value);
+
+            btn.disabled = true;
+            btnText.style.display = 'none';
+            spinner.style.display = 'block';
+            errBox.style.display = 'none';
+
+            try {
+                // 1. Fetch current DB state
+                const res = await fetch(`${API_URL}?t=${Date.now()}`);
+                if (!res.ok) throw new Error("Failed to connect to database");
+                const json = await res.json();
+                
+                let dbData = json.data || {};
+                let coupons = dbData.coupons || {};
+
+                // 2. Create new code
+                let newCode = makeCode();
+                // ensure unique
+                while(coupons[newCode]) {
+                    newCode = makeCode();
+                }
+
+                coupons[newCode] = {
+                    amount: amount,
+                    used: false,
+                    createdAt: Date.now()
+                };
+
+                // 3. Save to DB
+                const putRes = await fetch(API_URL, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        name: "RoyalStrikersCoupons",
+                        data: { coupons: coupons }
+                    })
+                });
+
+                if (!putRes.ok) throw new Error("Failed to save coupon to database");
+
+                // 4. Generate Ticket Image
+                document.getElementById('t-amount').innerText = '₹' + amount;
+                document.getElementById('t-code').innerText = newCode;
+                
+                // Temporarily bring on screen to render
+                const wrapper = document.getElementById('ticket-wrapper');
+                wrapper.style.top = '0px';
+                wrapper.style.left = '0px';
+                wrapper.style.zIndex = '-100';
+
+                await new Promise(r => setTimeout(r, 100)); // allow paint
+
+                const canvas = await html2canvas(document.getElementById('ticketUI'), {
+                    scale: 2,
+                    backgroundColor: null
+                });
+
+                wrapper.style.top = '-9999px';
+                wrapper.style.left = '-9999px';
+
+                // Download
+                const link = document.createElement('a');
+                link.download = `Royal-Strikers-Coupon-${newCode}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+
+            } catch (err) {
+                errBox.innerText = err.message;
+                errBox.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btnText.style.display = 'block';
+                spinner.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

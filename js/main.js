@@ -292,10 +292,19 @@ function showToast(message, type) {
     var submitBtn = document.getElementById('submitBtn');
     var teamSizeSel = document.getElementById('teamSize');
     var rosterContainer = document.getElementById('rosterContainer');
+    
+    // Coupon variables
+    var baseAmount = 0;
+    var discountAmount = 0;
+    var currentAmount = 0;
+    var appliedCouponCode = null;
+    const COUPON_DB_ID = "ff8081819d82fab6019f03de4d5f6509";
+    const COUPON_API_URL = `https://api.restful-api.dev/objects/${COUPON_DB_ID}`;
+    var couponInput = document.getElementById('couponCode');
+    var applyCouponBtn = document.getElementById('applyCouponBtn');
+    var couponStatus = document.getElementById('couponStatus');
 
     if (!form) return;
-
-    var currentAmount = 0;
 
     // Dynamic Roster Rendering
     function renderRoster() {
@@ -317,6 +326,14 @@ function showToast(message, type) {
             var idReqStr = (isSchool && reqStr) ? 'required' : '';
             var optLabel = idReqStr ? '' : ' (Optional)';
 
+            var schoolIdHtml = '';
+            if (isSchool) {
+                schoolIdHtml = '<div class="form-group">' +
+                                    '<label for="schoolId_' + i + '">Upload School ID' + optLabel + '</label>' +
+                                    '<input type="file" id="schoolId_' + i + '" name="schoolId_' + i + '" accept="image/*,.pdf" ' + idReqStr + '>' +
+                               '</div>';
+            }
+
             html += '<div class="player-slot" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,223,115,0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px;">' +
                         '<h4 style="color: #FFDF73; margin-bottom: 10px;">' + title + '</h4>' +
                         '<div class="form-group floating">' +
@@ -332,10 +349,7 @@ function showToast(message, type) {
                             '<input type="file" id="aadhaar_' + i + '" name="aadhaar_' + i + '" accept="image/*,.pdf" ' + reqStr + '>' +
                             '<div class="verification-status" id="status_' + i + '"></div>' +
                         '</div>' +
-                        '<div class="form-group">' +
-                            '<label for="schoolId_' + i + '">Upload School/College ID' + optLabel + '</label>' +
-                            '<input type="file" id="schoolId_' + i + '" name="schoolId_' + i + '" accept="image/*,.pdf" ' + idReqStr + '>' +
-                        '</div>' +
+                        schoolIdHtml +
                     '</div>';
         }
         rosterContainer.innerHTML = html;
@@ -355,26 +369,116 @@ function showToast(message, type) {
     }
 
 
+    function updateFeeDisplay() {
+        if (baseAmount === 0) return;
+        currentAmount = Math.max(0, baseAmount - discountAmount);
+        
+        let text = `Fee: <strong>₹${baseAmount}</strong>`;
+        if (discountAmount > 0) {
+            text += ` <br><span style="color:#10b981; font-size: 14px;">Discount: -₹${discountAmount}</span> <br> Total: <strong>₹${currentAmount}</strong>`;
+        }
+        feeDisp.innerHTML = text;
+        payBtn.textContent = `Pay ₹${currentAmount} via UPI`;
+        if (amtField) amtField.value = currentAmount;
+        payBtn.disabled = false;
+    }
+
     // 1. Level Selection Logic
     levelSel.addEventListener('change', function () {
         var level = this.value;
         if (level === 'School Level') {
-            currentAmount = 600;
-            feeDisp.innerHTML = 'Fee: <strong>₹600</strong>';
-            payBtn.textContent = 'Pay ₹600 via UPI';
+            baseAmount = 600;
         } else if (level === 'College Level (Under 18)' || level === 'College Level') {
-            currentAmount = 1000;
-            feeDisp.innerHTML = 'Fee: <strong>₹1,000</strong>';
-            payBtn.textContent = 'Pay ₹1,000 via UPI';
+            baseAmount = 1000;
         }
-        amtField.value = currentAmount;
-        payBtn.disabled = false;
+        updateFeeDisplay();
         renderRoster(); // re-render roster to update required fields
     });
 
+    // Coupon Apply Button Logic
+    if (applyCouponBtn) {
+        applyCouponBtn.addEventListener('click', async function() {
+            if (baseAmount === 0) {
+                couponStatus.innerHTML = '<span style="color:#ff4444;">Please select a level first.</span>';
+                return;
+            }
+            const code = couponInput.value.trim().toUpperCase();
+            if (!code) return;
+
+            applyCouponBtn.disabled = true;
+            applyCouponBtn.innerText = '...';
+            couponStatus.innerHTML = '<span style="color:#888;">Validating...</span>';
+
+            try {
+                const res = await fetch(`${COUPON_API_URL}?t=${Date.now()}`);
+                if (!res.ok) throw new Error('Network error');
+                const json = await res.json();
+                const coupons = json.data?.coupons || {};
+                
+                if (coupons[code]) {
+                    if (coupons[code].used) {
+                        couponStatus.innerHTML = '<span style="color:#ff4444;">This coupon has already been used.</span>';
+                        discountAmount = 0;
+                        appliedCouponCode = null;
+                    } else {
+                        discountAmount = coupons[code].amount;
+                        appliedCouponCode = code;
+                        couponStatus.innerHTML = `<span style="color:#10b981;">✅ Coupon applied! ₹${discountAmount} off.</span>`;
+                    }
+                } else {
+                    couponStatus.innerHTML = '<span style="color:#ff4444;">Invalid coupon code.</span>';
+                    discountAmount = 0;
+                    appliedCouponCode = null;
+                }
+                updateFeeDisplay();
+            } catch (err) {
+                couponStatus.innerHTML = '<span style="color:#ff4444;">Error validating coupon.</span>';
+            } finally {
+                applyCouponBtn.disabled = false;
+                applyCouponBtn.innerText = 'Apply';
+            }
+        });
+    }
+
     // 2. Pay via UPI Button
-    payBtn.addEventListener('click', function () {
-        if (currentAmount === 0) return;
+    payBtn.addEventListener('click', async function () {
+        if (currentAmount === 0 && baseAmount === 0) return;
+
+        payBtn.disabled = true;
+        payBtn.innerText = 'Processing...';
+
+        // Mark coupon as used if one is applied
+        if (appliedCouponCode) {
+            try {
+                const res = await fetch(`${COUPON_API_URL}?t=${Date.now()}`);
+                const json = await res.json();
+                let coupons = json.data?.coupons || {};
+                
+                if (coupons[appliedCouponCode] && !coupons[appliedCouponCode].used) {
+                    coupons[appliedCouponCode].used = true;
+                    await fetch(COUPON_API_URL, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            name: "RoyalStrikersCoupons",
+                            data: { coupons: coupons }
+                        })
+                    });
+                }
+            } catch (err) {
+                console.error("Failed to consume coupon", err);
+            }
+        }
+
+        payBtn.innerText = `Pay ₹${currentAmount} via UPI`;
+        payBtn.disabled = false;
+
+        // If total is 0, skip UPI and allow immediate submission
+        if (currentAmount === 0) {
+            upiManual.style.display = 'block';
+            upiManual.innerHTML = '<p style="color:#10b981;">Total is ₹0 due to coupon. You can submit the form directly!</p>';
+            return;
+        }
 
         // Launch UPI intent
         var upiLink = 'upi://pay?pa=8296398607@ptaxis&pn=Royal%20Strikers&cu=INR&am=' + currentAmount;
