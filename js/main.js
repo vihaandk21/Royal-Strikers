@@ -131,26 +131,58 @@ function showToast(message, type) {
      * @returns {Date|null}
      */
     function extractDOB(text) {
-        // Pattern 1: Full date DD/MM/YYYY or DD-MM-YYYY or DD.MM.YYYY
-        // Added tolerance for spaces and common OCR misreads of slashes (|, l, I)
-        var fullDate = text.match(/(\d{2})\s*[\/\-\.\|lI]\s*(\d{2})\s*[\/\-\.\|lI]\s*(\d{4})/);
+        // 1. Try with the original text but lenient regex (handles OCR misreads for slashes and numbers like O instead of 0)
+        var fullDate = text.match(/([0-3]?[0-9Oo])\s*[\/\-\.\|lI]\s*([0-1]?[0-9Oo])\s*[\/\-\.\|lI]\s*([1-2][0-9Oo]{3})/);
         if (fullDate) {
-            var day   = parseInt(fullDate[1], 10);
-            var month = parseInt(fullDate[2], 10) - 1;
-            var year  = parseInt(fullDate[3], 10);
+            var day   = parseInt(fullDate[1].replace(/[Oo]/g, '0'), 10);
+            var month = parseInt(fullDate[2].replace(/[Oo]/g, '0'), 10) - 1;
+            var year  = parseInt(fullDate[3].replace(/[Oo]/g, '0'), 10);
             if (year > 1920 && year < 2027 && month >= 0 && month <= 11 && day >= 1 && day <= 31) {
                 return new Date(year, month, day);
             }
         }
+        
+        // 2. Compressed search: remove all whitespace to catch heavily spaced OCR text
+        // e.g., "2 8 / 0 1 / 2 0 1 0" -> "28/01/2010"
+        var compressedText = text.replace(/\s+/g, '');
+        var compDate = compressedText.match(/([0-3]?[0-9Oo])[\/\-\.\|lI]([0-1]?[0-9Oo])[\/\-\.\|lI]([1-2][0-9Oo]{3})/);
+        if (compDate) {
+            var day2   = parseInt(compDate[1].replace(/[Oo]/g, '0'), 10);
+            var month2 = parseInt(compDate[2].replace(/[Oo]/g, '0'), 10) - 1;
+            var year2  = parseInt(compDate[3].replace(/[Oo]/g, '0'), 10);
+            if (year2 > 1920 && year2 < 2027 && month2 >= 0 && month2 <= 11 && day2 >= 1 && day2 <= 31) {
+                return new Date(year2, month2, day2);
+            }
+        }
+        
+        // 3. Catch missing slashes but preceded by DOB (in compressed text)
+        // e.g. "DOB28012010" or "DOB:28012010"
+        var dobStr = compressedText.match(/D[O0]B:?([0-3][0-9Oo])([0-1][0-9Oo])([1-2][0-9Oo]{3})/i);
+        if (dobStr) {
+            var day3   = parseInt(dobStr[1].replace(/[Oo]/g, '0'), 10);
+            var month3 = parseInt(dobStr[2].replace(/[Oo]/g, '0'), 10) - 1;
+            var year3  = parseInt(dobStr[3].replace(/[Oo]/g, '0'), 10);
+            if (year3 > 1920 && year3 < 2027 && month3 >= 0 && month3 <= 11 && day3 >= 1 && day3 <= 31) {
+                return new Date(year3, month3, day3);
+            }
+        }
 
-        // Pattern 2: Year of Birth only (some Aadhaar cards show only year)
-        // Added tolerance for noise characters between the word and the year
-        var yobMatch = text.match(/(?:year|yob|birth|dob)[^\d]{0,8}(\d{4})/i);
+        // 4. Year of Birth only
+        var yobMatch = compressedText.match(/(?:year|yob|birth|D[O0]B)[^\d]{0,4}([1-2][0-9Oo]{3})/i);
         if (yobMatch) {
-            var y = parseInt(yobMatch[1], 10);
+            var y = parseInt(yobMatch[1].replace(/[Oo]/g, '0'), 10);
             if (y > 1920 && y < 2027) {
                 return new Date(y, 0, 1);
             }
+        }
+        
+        // 5. Absolute fallback: Just find ANY 4-digit number that looks like a valid year of birth
+        // A lot of cards might just fail completely on text and only read the year.
+        // E.g., "1998" surrounded by spaces or newlines. We restrict to realistic recent years to avoid Aadhaar number matches.
+        var fallbackYearMatch = text.match(/\b(19[7-9]\d|20[0-2]\d)\b/);
+        if (fallbackYearMatch) {
+            var fbY = parseInt(fallbackYearMatch[1], 10);
+            return new Date(fbY, 0, 1);
         }
 
         return null;
@@ -175,7 +207,8 @@ function showToast(message, type) {
                 canvas.height = img.height * scale;
                 
                 // Apply high-contrast grayscale filter
-                ctx.filter = 'grayscale(100%) contrast(250%)';
+                // Reduced contrast from 250% to 120% to prevent thin text and slashes from disappearing
+                ctx.filter = 'grayscale(100%) contrast(120%) brightness(105%)';
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 
                 resolve(canvas.toDataURL('image/png'));
