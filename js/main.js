@@ -360,6 +360,35 @@ function showToast(message, type) {
         }
     }
 
+    // Converts a number to Indian-style words (e.g. 1000 -> "One Thousand")
+    function numberToWordsINR(num) {
+        num = Math.round(Math.max(0, num));
+        if (num === 0) return 'Zero';
+        var ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten',
+            'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+        var tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+        function twoDigits(n) {
+            if (n < 20) return ones[n];
+            return tens[Math.floor(n / 10)] + (n % 10 ? ' ' + ones[n % 10] : '');
+        }
+        function threeDigits(n) {
+            if (n < 100) return twoDigits(n);
+            return ones[Math.floor(n / 100)] + ' Hundred' + (n % 100 ? ' ' + twoDigits(n % 100) : '');
+        }
+
+        var result = '';
+        var lakh = Math.floor(num / 100000); num %= 100000;
+        var thousand = Math.floor(num / 1000); num %= 1000;
+        var hundred = num;
+
+        if (lakh) result += threeDigits(lakh) + ' Lakh ';
+        if (thousand) result += threeDigits(thousand) + ' Thousand ';
+        if (hundred) result += threeDigits(hundred);
+
+        return result.trim();
+    }
+
     // 3. Receipt Generation helper
     async function generateReceipt() {
         var wrapper = document.getElementById('receiptWrapper');
@@ -375,8 +404,28 @@ function showToast(message, type) {
         document.getElementById('r-amount').textContent = '₹' + currentAmount;
         document.getElementById('r-txn').textContent = document.getElementById('transactionId').value;
 
-        var date = new Date();
-        document.getElementById('r-date').textContent = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        // Receipt number — e.g. RS-2026-483920
+        var now = new Date();
+        var receiptNo = 'RS-' + now.getFullYear() + '-' + String(Date.now()).slice(-6);
+        document.getElementById('r-receiptNo').textContent = receiptNo;
+
+        // Amount in words
+        document.getElementById('r-amountWords').textContent = 'Rupees ' + numberToWordsINR(currentAmount) + ' Only';
+
+        // Base fee / discount breakdown (only shown if a coupon was applied)
+        var baseFeeRow = document.getElementById('r-baseFeeRow');
+        var discountRow = document.getElementById('r-discountRow');
+        if (discountAmount > 0) {
+            document.getElementById('r-baseFee').textContent = '₹' + baseAmount;
+            document.getElementById('r-discount').textContent = '- ₹' + discountAmount;
+            baseFeeRow.style.display = '';
+            discountRow.style.display = '';
+        } else {
+            baseFeeRow.style.display = 'none';
+            discountRow.style.display = 'none';
+        }
+
+        document.getElementById('r-date').textContent = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
 
         wrapper.style.display = 'block';
         wrapper.style.visibility = 'visible';
@@ -388,7 +437,8 @@ function showToast(message, type) {
             await new Promise(resolve => setTimeout(resolve, 100)); // Yield thread to allow DOM paint cycle
             var canvas = await html2canvas(document.getElementById('receiptCaptureBox') || document.getElementById('receipt'), {
                 scale: 2, // High resolution
-                useCORS: true
+                useCORS: true,
+                backgroundColor: '#ffffff'
             });
 
             var link = document.createElement('a');
