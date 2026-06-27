@@ -452,8 +452,11 @@ function showToast(message, type) {
                 var pPhone = document.getElementById('playerPhone_' + i) ? document.getElementById('playerPhone_' + i).value : 'N/A';
                 waMessage += "*" + i + ". " + pName + " (" + pPhone + ")*\n";
 
-                var aadhaarFile = document.getElementById('aadhaar_' + i).files[0];
-                var schoolIdFile = document.getElementById('schoolId_' + i).files[0];
+                var aadhaarInputElem = document.getElementById('aadhaar_' + i);
+                var schoolIdInputElem = document.getElementById('schoolId_' + i);
+                
+                var aadhaarFile = aadhaarInputElem ? aadhaarInputElem.files[0] : null;
+                var schoolIdFile = schoolIdInputElem ? schoolIdInputElem.files[0] : null;
                 
                 if (aadhaarFile) {
                     var aUrl = await uploadToImgBB(aadhaarFile);
