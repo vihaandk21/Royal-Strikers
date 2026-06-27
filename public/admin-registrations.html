@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrations | Royal Strikers Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #050505;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-muted: #888888;
+            --accent: #D4AF37;
+            --accent-hover: #b8962c;
+            --danger: #ff4444;
+            --success: #2ecc71;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* Password Overlay */
+        #auth-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .auth-box {
+            background: var(--surface);
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .auth-box h2 {
+            margin-top: 0;
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+
+        input[type="password"], input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 20px;
+            outline: none;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        input:focus { border-color: var(--accent); }
+
+        button {
+            padding: 14px;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        button:hover { background: var(--accent-hover); }
+
+        .auth-box button { width: 100%; }
+
+        #authError {
+            color: var(--danger);
+            font-size: 13px;
+            margin-top: -10px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        /* Dashboard */
+        #dashboard {
+            display: none;
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 30px 20px 60px;
+        }
+
+        .page-title {
+            text-align: center;
+            color: var(--accent);
+            letter-spacing: 2px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .page-sub {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 28px;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .stat-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-box .num {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .stat-box .lbl {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar input {
+            flex: 1;
+            margin-bottom: 0;
+            min-width: 200px;
+        }
+
+        .toolbar button {
+            white-space: nowrap;
+        }
+
+        .btn-secondary {
+            background: var(--surface-2);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover { background: #1c1c1c; }
+
+        #regList {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .reg-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px 20px;
+        }
+
+        .reg-card-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+        }
+
+        .reg-team-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .reg-time {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .reg-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 10px 18px;
+            margin-bottom: 12px;
+        }
+
+        .reg-field .k {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .reg-field .v {
+            font-size: 14px;
+            font-weight: 600;
+            color: #f0f0f0;
+            word-break: break-word;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .badge.boys { background: rgba(70, 130, 220, 0.15); color: #6fa8ff; }
+        .badge.girls { background: rgba(220, 70, 150, 0.15); color: #ff7fc0; }
+        .badge.amount { background: rgba(46, 204, 113, 0.15); color: var(--success); }
+        .badge.coupon { background: rgba(212, 175, 55, 0.15); color: var(--accent); }
+
+        .roster-toggle {
+            font-size: 12px;
+            color: var(--accent);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .roster-list {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--border);
+            font-size: 13px;
+            color: #ddd;
+        }
+
+        .roster-list div { margin-bottom: 4px; }
+
+        .empty-state, .loading-state {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 60px 20px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Password Overlay -->
+    <div id="auth-overlay">
+        <div class="auth-box">
+            <h2>🔒 ADMIN ACCESS</h2>
+            <p style="color: var(--text-muted); font-size: 13px;">Enter password to view registrations</p>
+            <input type="password" id="passInput" placeholder="Password" onkeypress="if(event.key==='Enter') checkPass()">
+            <div id="authError">Incorrect password. Try again.</div>
+            <button onclick="checkPass()">Unlock</button>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard">
+        <h1 class="page-title">TEAM REGISTRATIONS</h1>
+        <p class="page-sub">Royal Strikers — Volleyball Tournament</p>
+
+        <div class="stats-row">
+            <div class="stat-box"><div class="num" id="statTotal">0</div><div class="lbl">Teams Registered</div></div>
+            <div class="stat-box"><div class="num" id="statBoys">0</div><div class="lbl">Boys Teams</div></div>
+            <div class="stat-box"><div class="num" id="statGirls">0</div><div class="lbl">Girls Teams</div></div>
+            <div class="stat-box"><div class="num" id="statRevenue">₹0</div><div class="lbl">Total Collected</div></div>
+        </div>
+
+        <div class="toolbar">
+            <input type="text" id="searchInput" placeholder="Search by team, captain, or phone..." oninput="renderList()">
+            <button class="btn-secondary" onclick="loadData()">🔄 Refresh</button>
+        </div>
+
+        <div id="regList"><div class="loading-state">Loading registrations...</div></div>
+    </div>
+
+    <script>
+        const DB_ID = "ff8081819d82fab6019f03de4d5f6509";
+        const API_URL = `https://api.restful-api.dev/objects/${DB_ID}`;
+        let allRegistrations = [];
+
+        function checkPass() {
+            const val = document.getElementById('passInput').value;
+            if (val === 'royaladmin2026') {
+                document.getElementById('auth-overlay').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                loadData();
+            } else {
+                const err = document.getElementById('authError');
+                err.style.display = 'block';
+                setTimeout(() => err.style.display = 'none', 3000);
+            }
+        }
+
+        async function loadData() {
+            document.getElementById('regList').innerHTML = '<div class="loading-state">Loading registrations...</div>';
+            try {
+                const res = await fetch(`${API_URL}?t=${Date.now()}`);
+                if (!res.ok) throw new Error("Failed to connect to database");
+                const json = await res.json();
+                const dbData = json.data || {};
+                allRegistrations = (dbData.registrations || []).slice().reverse(); // newest first
+                renderStats();
+                renderList();
+            } catch (e) {
+                document.getElementById('regList').innerHTML = '<div class="empty-state">⚠️ Failed to load registrations. Try refreshing.</div>';
+                console.error(e);
+            }
+        }
+
+        function renderStats() {
+            const total = allRegistrations.length;
+            const boys = allRegistrations.filter(r => r.teamGender === 'Boys').length;
+            const girls = allRegistrations.filter(r => r.teamGender === 'Girls').length;
+            const revenue = allRegistrations.reduce((sum, r) => sum + (r.amountPaid || 0), 0);
+
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statBoys').textContent = boys;
+            document.getElementById('statGirls').textContent = girls;
+            document.getElementById('statRevenue').textContent = '₹' + revenue;
+        }
+
+        function renderList() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const list = document.getElementById('regList');
+
+            let filtered = allRegistrations;
+            if (query) {
+                filtered = allRegistrations.filter(r =>
+                    (r.teamName || '').toLowerCase().includes(query) ||
+                    (r.captainName || '').toLowerCase().includes(query) ||
+                    (r.phone || '').includes(query)
+                );
+            }
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<div class="empty-state">No registrations found.</div>';
+                return;
+            }
+
+            list.innerHTML = filtered.map((r, idx) => {
+                const date = r.timestamp ? new Date(r.timestamp).toLocaleString() : 'Unknown date';
+                const genderBadge = r.teamGender === 'Girls'
+                    ? '<span class="badge girls">👧 Girls</span>'
+                    : r.teamGender === 'Boys'
+                        ? '<span class="badge boys">👦 Boys</span>'
+                        : '';
+                const couponBadge = r.couponCode ? `<span class="badge coupon">🎟 ${r.couponCode}</span>` : '';
+                const roster = (r.roster || []);
+                const rosterId = 'roster-' + idx;
+
+                return `
+                <div class="reg-card">
+                    <div class="reg-card-head">
+                        <div>
+                            <div class="reg-team-name">${escapeHtml(r.teamName || 'N/A')}</div>
+                            <div class="reg-time">${date}</div>
+                        </div>
+                        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                            ${genderBadge}
+                            <span class="badge amount">💰 ₹${r.amountPaid ?? 0}</span>
+                            ${couponBadge}
+                        </div>
+                    </div>
+                    <div class="reg-grid">
+                        <div class="reg-field"><div class="k">Captain</div><div class="v">${escapeHtml(r.captainName || 'N/A')}</div></div>
+                        <div class="reg-field"><div class="k">Phone</div><div class="v">${escapeHtml(r.phone || 'N/A')}</div></div>
+                        <div class="reg-field"><div class="k">Category</div><div class="v">${escapeHtml(r.level || 'N/A')}</div></div>
+                        <div class="reg-field"><div class="k">Team Size</div><div class="v">${r.teamSize || 'N/A'} players</div></div>
+                        <div class="reg-field"><div class="k">Transaction ID</div><div class="v">${escapeHtml(r.transactionId || 'N/A')}</div></div>
+                        <div class="reg-field"><div class="k">Base Fee</div><div class="v">₹${r.baseAmount ?? 'N/A'}</div></div>
+                    </div>
+                    ${roster.length > 0 ? `
+                        <div class="roster-toggle" onclick="toggleRoster('${rosterId}')">▾ View ${roster.length} player(s)</div>
+                        <div class="roster-list" id="${rosterId}">
+                            ${roster.map((p, i) => `<div>${i + 1}. ${escapeHtml(p.name || 'N/A')} — ${escapeHtml(p.phone || 'N/A')}</div>`).join('')}
+                        </div>
+                    ` : ''}
+                </div>`;
+            }).join('');
+        }
+
+        function toggleRoster(id) {
+            const el = document.getElementById(id);
+            el.style.display = el.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>

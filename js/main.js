@@ -280,7 +280,8 @@ function showToast(message, type) {
             try {
                 const res = await fetch(`${COUPON_API_URL}?t=${Date.now()}`);
                 const json = await res.json();
-                let coupons = json.data?.coupons || {};
+                let dbData = json.data || {};
+                let coupons = dbData.coupons || {};
                 
                 if (coupons[appliedCouponCode] && !coupons[appliedCouponCode].used) {
                     coupons[appliedCouponCode].used = true;
@@ -289,7 +290,7 @@ function showToast(message, type) {
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
                             name: "RoyalStrikersCoupons",
-                            data: { coupons: coupons }
+                            data: { coupons: coupons, registrations: dbData.registrations || [] }
                         })
                     });
                 }
@@ -475,6 +476,33 @@ function showToast(message, type) {
         return null;
     }
 
+    // Logs a successful registration to the shared records database (best-effort, non-blocking)
+    async function logRegistration(record) {
+        var DB_ID = "ff8081819d82fab6019f03de4d5f6509";
+        var API_URL = "https://api.restful-api.dev/objects/" + DB_ID;
+        try {
+            var res = await fetch(API_URL + "?t=" + Date.now());
+            var json = await res.json();
+            var dbData = json.data || {};
+            var registrations = dbData.registrations || [];
+            registrations.push(record);
+
+            await fetch(API_URL, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: "RoyalStrikersCoupons",
+                    data: {
+                        coupons: dbData.coupons || {},
+                        registrations: registrations
+                    }
+                })
+            });
+        } catch (e) {
+            console.error('Registration logging failed (non-critical):', e);
+        }
+    }
+
     // 4. Form Submission
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -513,6 +541,7 @@ function showToast(message, type) {
                 "Roster:\n";
 
             // Upload all documents to ImgBB and append to waMessage
+            var rosterLog = [];
             for (var i = 1; i <= size; i++) {
                 var pNameInput = document.getElementById('playerName_' + i);
                 if (!pNameInput || !pNameInput.value) continue; // Skip unfilled optional subs
@@ -520,6 +549,7 @@ function showToast(message, type) {
                 var pName = pNameInput.value;
                 var pPhone = document.getElementById('playerPhone_' + i) ? document.getElementById('playerPhone_' + i).value : 'N/A';
                 waMessage += "*" + i + ". " + pName + " (" + pPhone + ")*\n";
+                rosterLog.push({ name: pName, phone: pPhone });
 
                 var aadhaarInputElem = document.getElementById('aadhaar_' + i);
                 var schoolIdInputElem = document.getElementById('schoolId_' + i);
@@ -561,15 +591,39 @@ function showToast(message, type) {
                 showToast('Registration successful! Downloading receipt...', 'success');
                 await generateReceipt();
 
+                // Log this registration to the shared records database (does not block UX)
+                logRegistration({
+                    timestamp: Date.now(),
+                    teamName: document.getElementById('teamName') ? document.getElementById('teamName').value : 'N/A',
+                    captainName: document.getElementById('fullName').value,
+                    phone: document.getElementById('phone').value,
+                    teamGender: document.getElementById('teamGender') ? document.getElementById('teamGender').value : 'N/A',
+                    level: document.getElementById('level').value,
+                    teamSize: size,
+                    transactionId: document.getElementById('transactionId').value,
+                    baseAmount: baseAmount,
+                    discountAmount: discountAmount,
+                    amountPaid: currentAmount,
+                    couponCode: appliedCouponCode || null,
+                    roster: rosterLog
+                });
+
                 waMessage += "\n*(Please find attached my downloaded receipt)*";
                 var waUrl = "https://api.whatsapp.com/send?phone=918296398607&text=" + encodeURIComponent(waMessage);
 
-                // Show explicit WhatsApp button instead of redirect to prevent mobile popup blockers
-                submitBtn.style.display = 'none';
+                // Mark submit button as done (kept visible so users see what already happened)
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '✅ Receipt Downloaded';
+                submitBtn.style.opacity = '0.7';
+                submitBtn.style.cursor = 'default';
+
+                // Show the clearly separate WhatsApp step — not a swap-in-place, a distinct new button
                 var waBtn = document.getElementById('waProceedBtn');
-                if (waBtn) {
+                var waWrapper = document.getElementById('waStepWrapper');
+                if (waBtn && waWrapper) {
                     waBtn.href = waUrl;
-                    waBtn.style.display = 'block';
+                    waWrapper.style.display = 'block';
+                    waWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
 
                 showToast('Please click "Complete Registration on WhatsApp" to finalize.', 'success');

@@ -185,7 +185,7 @@
         }
     </style>
   <script type="module" crossorigin src="/assets/vendor-wvuL_0fi.js"></script>
-  <script type="module" crossorigin src="/assets/main-D8HSxBOo.js"></script>
+  <script type="module" crossorigin src="/assets/main-CHV1ROZW.js"></script>
   <link rel="stylesheet" crossorigin href="/assets/vendor-fOJvfYOR.css">
   <link rel="stylesheet" crossorigin href="/assets/main-CE3R_tqW.css">
 </head>
@@ -376,10 +376,25 @@
                     Submit &amp; Download Receipt
                 </button>
 
-                <!-- Proceed to WhatsApp (Hidden initially) -->
-                <a href="#" id="waProceedBtn" class="submit-btn" style="display: none; text-align: center; text-decoration: none; background: #25D366; color: white; margin-top: 15px; border-color: #25D366; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);">
-                    Complete Registration on WhatsApp
-                </a>
+                <!-- Step 2 indicator + Proceed to WhatsApp (Hidden initially) -->
+                <div id="waStepWrapper" style="display: none; margin-top: 18px;">
+                    <div style="text-align: center; color: #25D366; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 10px; text-transform: uppercase;">
+                        ⬇️ One last step to finish registration ⬇️
+                    </div>
+                    <a href="#" id="waProceedBtn" class="submit-btn wa-pulse" style="text-align: center; text-decoration: none; background: #25D366; color: white; border-color: #25D366; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <span style="font-size: 18px;">📲</span> Complete Registration on WhatsApp
+                    </a>
+                </div>
+
+                <style>
+                    @keyframes waPulseGlow {
+                        0%, 100% { box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); }
+                        50% { box-shadow: 0 4px 28px rgba(37, 211, 102, 0.85); }
+                    }
+                    .wa-pulse {
+                        animation: waPulseGlow 1.6s ease-in-out infinite;
+                    }
+                </style>
 
             </form>
         </div>

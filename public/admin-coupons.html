@@ -394,13 +394,13 @@
                     createdAt: Date.now()
                 };
 
-                // 3. Save to DB
+                // 3. Save to DB (preserve registrations data — shared object)
                 const putRes = await fetch(API_URL, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         name: "RoyalStrikersCoupons",
-                        data: { coupons: coupons }
+                        data: { coupons: coupons, registrations: dbData.registrations || [] }
                     })
                 });
 
