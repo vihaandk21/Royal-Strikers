@@ -243,11 +243,11 @@ function showToast(message, type) {
                 var dob = extractDOB(text);
 
                 if (dob) {
-                    var cutoffDate = new Date(2008, 6, 8); // July 8, 2008
+                    var cutoffDate = new Date(2008, 6, 5); // July 5, 2008
                     var dobString = dob.toLocaleDateString();
 
                     if (dob < cutoffDate) {
-                        status.innerHTML = '<span class="warning">❌ Registration blocked: DOB is ' + dobString + ' (Before cutoff: July 8, 2008). Only eligible players are allowed.</span>';
+                        status.innerHTML = '<span class="warning">❌ Registration blocked: DOB is ' + dobString + ' (Before cutoff: July 5, 2008). Only eligible players are allowed.</span>';
                         document.getElementById('payBtn').disabled = true;
                         document.getElementById('submitBtn').disabled = true;
                     } else if (dob >= cutoffDate) {
