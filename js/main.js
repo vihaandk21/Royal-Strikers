@@ -402,7 +402,7 @@ function showToast(message, type) {
                 couponStatus.innerHTML = '<span style="color:#ff4444;">Please select a level first.</span>';
                 return;
             }
-            const code = couponInput.value.trim().toUpperCase();
+            const code = couponInput.value.replace(/\s/g, '').toUpperCase();
             if (!code) return;
 
             applyCouponBtn.disabled = true;
