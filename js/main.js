@@ -308,13 +308,32 @@ function showToast(message, type) {
             return;
         }
 
-        // Launch UPI intent
+        // Launch UPI intent via hidden anchor to prevent page unload on some Android devices
         var upiLink = 'upi://pay?pa=8296398607@ptaxis&pn=Royal%20Strikers&cu=INR&am=' + currentAmount;
-        window.location.href = upiLink;
+        var a = document.createElement('a');
+        a.href = upiLink;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
 
-        // Show manual fallback in case intent fails (desktop)
+        // Show manual fallback in case intent fails (desktop) or browser kills the tab
         setTimeout(function () {
             upiManual.style.display = 'block';
+            
+            // Show a warning for mobile users who might lose their form data
+            if (!document.getElementById('mobileReloadWarning') && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                var warning = document.createElement('p');
+                warning.id = 'mobileReloadWarning';
+                warning.style.color = '#ff4444';
+                warning.style.fontSize = '12.5px';
+                warning.style.marginTop = '15px';
+                warning.style.background = 'rgba(255, 68, 68, 0.1)';
+                warning.style.padding = '10px';
+                warning.style.borderRadius = '5px';
+                warning.style.border = '1px solid rgba(255, 68, 68, 0.3)';
+                warning.innerHTML = '⚠️ <strong>Important:</strong> If your phone resets this form after you open the payment app, your phone is closing the browser to save memory. In that case, please use <strong>another phone</strong> to scan the QR code above instead of clicking the Pay button.';
+                upiManual.appendChild(warning);
+            }
         }, 1500);
     });
 
