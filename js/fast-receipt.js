@@ -120,6 +120,9 @@
     var feeDisplay = document.getElementById('feeDisplay');
     var amountField = document.getElementById('amountField');
 
+    var payBtn = document.getElementById('payBtn');
+    var upiManual = document.getElementById('upiManual');
+
     if (levelSelect) {
         levelSelect.addEventListener('change', function () {
             var val = this.value;
@@ -131,6 +134,74 @@
             if (feeDisplay) {
                 feeDisplay.innerHTML = `<p style="color: #ffbc00; font-size: 1.2rem; font-weight: bold; margin: 0;">Total Amount: ₹${amt}</p>`;
             }
+            if (payBtn) {
+                payBtn.innerText = `Pay ₹${amt} via UPI`;
+                payBtn.disabled = false;
+            }
+        });
+    }
+
+    if (payBtn) {
+        payBtn.addEventListener('click', function () {
+            var currentAmount = Number(amountField.value) || 0;
+            if (currentAmount === 0) return;
+
+            var upiLink = 'upi://pay?pa=8296398607@ptaxis&pn=Royal%20Strikers&cu=INR&am=' + currentAmount;
+            var a = document.createElement('a');
+            a.href = upiLink;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            setTimeout(function () {
+                if(upiManual) upiManual.style.display = 'block';
+            }, 1500);
+        });
+    }
+
+    var copyUpiBtn = document.getElementById('copyUpiBtn');
+    if (copyUpiBtn) {
+        copyUpiBtn.addEventListener('click', function () {
+            navigator.clipboard.writeText('8296398607@ptaxis').then(function () {
+                copyUpiBtn.innerText = 'Copied!';
+                copyUpiBtn.style.background = '#2ecc71';
+                copyUpiBtn.style.color = '#fff';
+                setTimeout(function () {
+                    copyUpiBtn.innerText = 'Copy UPI ID';
+                    copyUpiBtn.style.background = 'rgba(255, 255, 255, 0.1)';
+                }, 2000);
+            });
+        });
+    }
+
+    var qrScannerImg = document.getElementById('qrScannerImg');
+    var qrModal = document.getElementById('qrModal');
+    var qrModalImg = document.getElementById('qrModalImg');
+    var qrClose = document.getElementById('qrClose');
+    if (qrScannerImg && qrModal && qrModalImg && qrClose) {
+        qrScannerImg.onclick = function(){
+            qrModal.style.display = "block";
+            qrModalImg.src = this.src;
+        }
+        qrClose.onclick = function() {
+            qrModal.style.display = "none";
+        }
+        qrModal.onclick = function(e) {
+            if (e.target !== qrModalImg) qrModal.style.display = "none";
+        }
+    }
+
+    var cursor = document.getElementById('customCursor');
+    var isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    if (cursor && !isTouchDevice) {
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+        const interactiveElements = document.querySelectorAll('a, button, input, select, textarea, .card');
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
         });
     }
 
