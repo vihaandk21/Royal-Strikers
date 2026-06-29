@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Register for Royal Strikers Volleyball tournaments. Sign up and pay securely.">
+    <title>Register — Royal Strikers</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👑</text></svg>">
+    <!-- Premium Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Outfit:wght@300;400;600;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* ===== REALISTIC PAYMENT RECEIPT (white paper, formal) ===== */
+        #receiptCaptureBox {
+            background: #ffffff;
+            color: #1a1a1a;
+            width: 520px;
+            padding: 36px 40px;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            position: relative;
+            border: 1px solid #000;
+        }
+
+        .rc-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid #000;
+            padding-bottom: 14px;
+            margin-bottom: 16px;
+        }
+
+        .rc-org-name {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 23px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            color: #000;
+        }
+
+        .rc-org-sub {
+            font-size: 11px;
+            color: #555;
+            margin-top: 3px;
+        }
+
+        .rc-meta-right {
+            text-align: right;
+            font-size: 11px;
+            color: #555;
+        }
+
+        .rc-receipt-no-val {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            font-weight: 700;
+            color: #000;
+            margin-top: 2px;
+        }
+
+        .rc-title-bar {
+            text-align: center;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #333;
+            margin: 2px 0 18px;
+        }
+
+        table.rc-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 14px;
+            font-size: 13px;
+        }
+
+        table.rc-table td {
+            padding: 7px 2px;
+            border-bottom: 1px solid #e3e3e3;
+            vertical-align: top;
+        }
+
+        table.rc-table td.rc-k {
+            color: #555;
+            width: 40%;
+            font-size: 12px;
+        }
+
+        table.rc-table td.rc-v {
+            font-weight: 600;
+            color: #111;
+            word-break: break-word;
+        }
+
+        .rc-amount-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 2px solid #000;
+            border-bottom: 2px solid #000;
+            padding: 12px 2px;
+            margin: 8px 0 6px;
+        }
+
+        .rc-amount-label {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #000;
+        }
+
+        .rc-amount-num {
+            font-family: Georgia, serif;
+            font-size: 24px;
+            font-weight: 800;
+            color: #000;
+        }
+
+        .rc-amount-words {
+            font-size: 11px;
+            color: #555;
+            font-style: italic;
+            margin-bottom: 26px;
+        }
+
+        .rc-stamp {
+            position: absolute;
+            top: 145px;
+            right: 46px;
+            width: 92px;
+            height: 92px;
+            border: 3px solid #c1272d;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(-16deg);
+            opacity: 0.82;
+        }
+
+        .rc-stamp span {
+            color: #c1272d;
+            font-weight: 800;
+            font-size: 17px;
+            letter-spacing: 2px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .rc-footer-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 22px;
+        }
+
+        .rc-note {
+            font-size: 10px;
+            color: #777;
+            max-width: 270px;
+            line-height: 1.5;
+        }
+
+        .rc-sign {
+            text-align: center;
+        }
+
+        .rc-sign-name {
+            font-family: 'Caveat', cursive;
+            font-size: 26px;
+            color: #1a1a1a;
+        }
+
+        .rc-sign-rule {
+            border-top: 1px solid #000;
+            width: 150px;
+            margin: 2px 0 4px;
+        }
+
+        .rc-sign-label {
+            font-size: 10px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <!-- Page Transition Overlay -->
+    <div id="page-transition" class="page-transition"></div>
+
+    <!-- Custom Magnetic Cursor -->
+    <div class="custom-cursor" id="customCursor"></div>
+
+
+    <!-- Cinematic Preloader -->
+    <div id="preloader" style="position: fixed; inset: 0; background: #050505; z-index: 99999; display: flex; align-items: center; justify-content: center;">
+        <h1 id="preloader-text" style="font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 3rem; color: #D4AF37; letter-spacing: 0.1em; opacity: 0; transform: translateY(20px);">ROYAL STRIKERS</h1>
+    </div>
+
+
+    <!-- ===== NAVIGATION ===== -->
+    <nav>
+        <a href="index.html" class="logo">ROYAL STRIKERS</a>
+
+        <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <ul id="navMenu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#sports">Sports</a></li>
+            <li><a href="index.html#about">About</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="register.html">Register</a></li>
+        </ul>
+    </nav>
+
+    <!-- ===== REGISTER HERO ===== -->
+    <section class="register-hero">
+        <h1>Registration</h1>
+        <p>Fill in your details, complete payment, and download your receipt.</p>
+    </section>
+
+
+    <!-- ===== REGISTRATION FORM ===== -->
+    <section>
+        <div class="register">
+            <form id="registerForm">
+
+                <!-- Web3Forms configuration -->
+                <input type="hidden" name="access_key" value="0990bf5a-95c0-4e8f-b4cb-823602f970af">
+                <input type="hidden" name="subject" value="New Registration — Royal Strikers">
+                <input type="hidden" name="from_name" value="Royal Strikers Website">
+                <input type="hidden" name="sport" value="Volleyball">
+                
+                <!-- Anti-Spam Honeypot -->
+                <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
+                
+                <!-- Hidden Field for Full Roster (Fixes missing ImgBB Links in Email) -->
+                <textarea id="rosterData" name="Full Registration Details" style="display: none;"></textarea>
+
+                <!-- ── Team Category (Topmost) ── -->
+                
+                            
+
+                
+
+                
+                <!-- ── Section 4: Payment Info ── -->
+                <h3 class="form-section-title" style="margin-top: 30px;">Payment Info</h3>
+                
+                <div class="form-group floating">
+                    <input type="number" id="amountField" name="amountPaid" placeholder=" " required>
+                    <label for="amountField">Amount Paid (₹)</label>
+                </div>
+
+                <!-- Transaction ID -->
+                <div class="form-group" style="margin-top: 20px;">
+                    <label for="transactionId">UPI Transaction ID (12-digit UTR Number)</label>
+                    <input type="text" id="transactionId" name="transactionId"
+                           placeholder="e.g. 426131456789" pattern="\d{12}" minlength="12" maxlength="12" required>
+                    <p style="font-size: 12px; color: #888; margin-top: 5px;">
+                        Find this in your UPI app under transaction history
+                    </p>
+                    <small style="color: #ff4d4d; font-size: 0.85rem; margin-top: 0.5rem; display: block; background: rgba(122, 0, 22, 0.2); padding: 0.5rem; border-radius: 5px; border: 1px solid rgba(255, 77, 77, 0.3);">
+                        ⚠️ <strong>SECURITY AUDIT:</strong> Your 12-digit UTR is manually verified against our bank ledger. Fake UTR submissions may result in a permanent ban from Royal Strikers tournaments.
+                    </small>
+                </div>
+
+                <!-- Hidden field for amount -->
+                <input type="hidden" id="amountField" name="amountPaid" value="">
+
+                <!-- Submit & Generate Receipt -->
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    Submit &amp; Download Receipt
+                </button>
+
+                <!-- Step 2 indicator + Proceed to WhatsApp (Hidden initially) -->
+                <div id="waStepWrapper" style="display: none; margin-top: 18px;">
+                    <div style="text-align: center; color: #25D366; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 10px; text-transform: uppercase;">
+                        ⬇️ One last step to finish registration ⬇️
+                    </div>
+                    <a href="#" id="waProceedBtn" class="submit-btn wa-pulse" style="text-align: center; text-decoration: none; background: #25D366; color: white; border-color: #25D366; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <span style="font-size: 18px;">📲</span> Complete Registration on WhatsApp
+                    </a>
+                </div>
+
+                <style>
+                    @keyframes waPulseGlow {
+                        0%, 100% { box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); }
+                        50% { box-shadow: 0 4px 28px rgba(37, 211, 102, 0.85); }
+                    }
+                    .wa-pulse {
+                        animation: waPulseGlow 1.6s ease-in-out infinite;
+                    }
+                </style>
+
+            </form>
+        </div>
+    </section>
+
+    <!-- ===== EXTENSION: OFFSCREEN HIGH-END RECEIPT (Render-Safe Layout) ===== -->
+    <div id="receiptWrapper" style="position: absolute; left: -9999px; top: -9999px; visibility: hidden;">
+        <div id="receiptCaptureBox">
+            <div class="rc-header-row">
+                <div>
+                    <div class="rc-org-name">ROYAL STRIKERS</div>
+                    <div class="rc-org-sub">Sports Club &middot; Volleyball Tournament</div>
+                </div>
+                <div class="rc-meta-right">
+                    <div>Receipt No.</div>
+                    <div class="rc-receipt-no-val" id="r-receiptNo">—</div>
+                </div>
+            </div>
+
+            <div class="rc-title-bar">Payment Receipt</div>
+
+            <table class="rc-table">
+                <tr>
+                    <td class="rc-k">Date</td>
+                    <td class="rc-v" id="r-date">—</td>
+                </tr>
+                <tr>
+                    <td class="rc-k">Team Name</td>
+                    <td class="rc-v" id="r-teamName">—</td>
+                </tr>
+                <tr>
+                    <td class="rc-k">Captain Name</td>
+                    <td class="rc-v" id="r-name">—</td>
+                </tr>
+                <tr>
+                    <td class="rc-k">Phone Number</td>
+                    <td class="rc-v" id="r-phone">—</td>
+                </tr>
+                <tr>
+                    <td class="rc-k">Category</td>
+                    <td class="rc-v" id="r-level">—</td>
+                </tr>
+                <tr>
+                    <td class="rc-k">Transaction ID / UTR</td>
+                    <td class="rc-v" id="r-txn">—</td>
+                </tr>
+                <tr id="r-baseFeeRow" style="display:none;">
+                    <td class="rc-k">Base Entry Fee</td>
+                    <td class="rc-v" id="r-baseFee">—</td>
+                </tr>
+                <tr id="r-discountRow" style="display:none;">
+                    <td class="rc-k">Coupon Discount</td>
+                    <td class="rc-v" id="r-discount">—</td>
+                </tr>
+            </table>
+
+            <div class="rc-amount-box">
+                <span class="rc-amount-label">Amount Paid</span>
+                <span class="rc-amount-num" id="r-amount">₹0</span>
+            </div>
+            <div class="rc-amount-words" id="r-amountWords">Rupees Zero Only</div>
+
+            <div class="rc-stamp"><span>PAID</span></div>
+
+            <div class="rc-footer-row">
+                <div class="rc-note">This is a system-generated receipt. Please retain a copy for your records and present it at the venue registration desk.</div>
+                <div class="rc-sign">
+                    <div class="rc-sign-name">Royal Strikers</div>
+                    <div class="rc-sign-rule"></div>
+                    <div class="rc-sign-label">Authorized Signatory</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>ROYAL STRIKERS</h3>
+                <p>Compete • Improve • Conquer</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/sports_club_royal_strikers_bd?igsh=MThxeTFkazIwNW9jMw==" target="_blank" rel="noopener">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                        @sports_club_royal_strikers_bd
+                    </a>
+                </div>
+            </div>
+            
+            <div class="footer-contact">
+                <h4>Contact Us</h4>
+                <p>📧 <a href="mailto:royalstrikersltd@gmail.com">royalstrikersltd@gmail.com</a></p>
+            </div>
+            
+            <div class="footer-location">
+                <h4>Location</h4>
+                <p>🏐 <strong>Mangala Volleyball Court</strong></p>
+                <p>Nehru Ave Rd, Lalbagh,</p>
+                <p>Mangaluru, Karnataka - 575003</p>
+                <a href="https://maps.app.goo.gl/rGABZ5vbV46Eu1P66" target="_blank" rel="noopener" class="map-link">View on Google Maps</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="copyright">&copy; 2026 Royal Strikers. All Rights Reserved.</p>
+            <p class="credits">Developed By <span>Shreesha</span> and <span>Vihaan</span></p>
+        </div>
+    </footer>
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script type="module" src="/js/main.js"></script>
+</body>
+</html>
