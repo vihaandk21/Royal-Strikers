@@ -155,6 +155,13 @@
         form.addEventListener('submit', async function (e) {
             e.preventDefault();
 
+            // Fallback to ensure amount is always populated properly even if change event was missed
+            var val = levelSelect ? levelSelect.value : '';
+            var amt = 0;
+            if (val === 'School Level') amt = 600;
+            else if (val === 'College Level (Under 18)') amt = 1000;
+            if (amountField) amountField.value = amt;
+
             var phone = document.getElementById('phone').value;
             if (!/^\d{10}$/.test(phone)) {
                 showToast('Please enter a valid 10-digit phone number.', 'error');
