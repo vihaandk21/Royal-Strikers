@@ -257,29 +257,6 @@
                 <div class="fee-display" id="feeDisplay" style="margin-bottom: 20px; background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 8px; text-align: center;">
                     <p style="margin: 0; color: #a0aec0;">Select your level above to see the fee.</p>
                 </div>
-
-                <!-- Pay via UPI button -->
-                <button type="button" class="pay-btn" id="payBtn" disabled>
-                    Select level first
-                </button>
-
-                <!-- Manual UPI fallback -->
-                <div class="upi-manual" id="upiManual" style="display: none;">
-                    <p>Or scan the QR Code to pay manually (Click to enlarge):</p>
-                    <img src="images/scanner qr code image/WhatsApp Image 2026-06-11 at 18.05.03.webp" alt="UPI QR Code Scanner" class="qr-code-img" id="qrScannerImg">
-                    <p style="margin-top: 10px;">Or use this UPI ID:</p>
-                    <div class="upi-id" id="upiId">8296398607@ptaxis</div>
-                    <button type="button" class="copy-btn" id="copyUpiBtn">Copy UPI ID</button>
-                    <p style="font-size: 11px; color: #ff6b6b; margin-top: 15px; border: 1px dashed rgba(255,107,107,0.3); padding: 8px; border-radius: 4px;">
-                        ⚠️ Note for Android users: If your phone resets this form after you open the payment app, your phone is closing the browser to save memory. In that case, please use another phone to scan the QR code above instead of clicking the Pay button.
-                    </p>
-                </div>
-
-                <!-- QR Code Modal -->
-                <div id="qrModal" class="qr-modal">
-                    <span class="qr-close" id="qrClose">&times;</span>
-                    <img class="qr-modal-content" id="qrModalImg">
-                </div>
                 
                 <input type="hidden" id="amountField" name="amountPaid" value="0">
 
