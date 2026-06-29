@@ -113,7 +113,7 @@
         }
     }
 
-    var form = document.getElementById('registerForm');
+    var form = document.getElementById('fastRegisterForm');
     
     // Auto-calculate fee
     var levelSelect = document.getElementById('level');
