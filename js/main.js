@@ -592,7 +592,7 @@ function showToast(message, type) {
                 await generateReceipt();
 
                 // Log this registration to the shared records database (does not block UX)
-                logRegistration({
+                await logRegistration({
                     timestamp: Date.now(),
                     teamName: document.getElementById('teamName') ? document.getElementById('teamName').value : 'N/A',
                     captainName: document.getElementById('fullName').value,

@@ -114,6 +114,26 @@
     }
 
     var form = document.getElementById('registerForm');
+    
+    // Auto-calculate fee
+    var levelSelect = document.getElementById('level');
+    var feeDisplay = document.getElementById('feeDisplay');
+    var amountField = document.getElementById('amountField');
+
+    if (levelSelect) {
+        levelSelect.addEventListener('change', function () {
+            var val = this.value;
+            var amt = 0;
+            if (val === 'School Level') amt = 600;
+            else if (val === 'College Level (Under 18)') amt = 1000;
+            
+            if (amountField) amountField.value = amt;
+            if (feeDisplay) {
+                feeDisplay.innerHTML = `<p style="color: #ffbc00; font-size: 1.2rem; font-weight: bold; margin: 0;">Total Amount: ₹${amt}</p>`;
+            }
+        });
+    }
+
     if(form) {
         form.addEventListener('submit', async function (e) {
             e.preventDefault();
@@ -154,7 +174,7 @@
                 formData.set('teamSize', '0'); // To satisfy backend if needed
 
                 // Log to Firebase/Restful API
-                logRegistration({
+                await logRegistration({
                     timestamp: Date.now(),
                     teamName: formData.get('teamName') || 'N/A',
                     captainName: formData.get('fullName') || 'N/A',
