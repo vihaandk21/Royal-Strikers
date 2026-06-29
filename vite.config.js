@@ -1,4 +1,4 @@
-﻿import { resolve } from 'path'
+import { resolve } from 'path'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
@@ -10,7 +10,8 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         gallery: resolve(__dirname, 'gallery.html'),
-        register: resolve(__dirname, 'register.html')
+        register: resolve(__dirname, 'register.html'),
+        fastReceipt: resolve(__dirname, 'fast-receipt.html')
       },
       output: {
         manualChunks(id) {
